@@ -4,21 +4,17 @@
 
 It connects existing actuator and sensor datapoints from adapters such as Shelly, Sonoff, KNX, and Homematic. It does not require specific hardware.
 
-## Project goal
+## Device configuration and manual controls
 
-Configure each shading device centrally in the adapter instance's graphical configuration. A device can represent a shutter, blind, or awning and can reference these existing ioBroker datapoints:
+Configure each shading device in the adapter instance's graphical settings. Each row has a stable internal ID, a display name, and a device type. Add the full ioBroker IDs for open, close, position, and optional closed/tilted contact datapoints.
 
-| Setting | Purpose |
-| --- | --- |
-| Name | Human-readable name for the configured device |
-| Type | Shutter, blind, or awning |
-| Open command | Datapoint used to open the device |
-| Close command | Datapoint used to close the device |
-| Position command | Optional datapoint for setting a target position |
-| Closed contact | Optional datapoint reporting whether a window or door is closed |
-| Tilted contact | Optional datapoint reporting whether a window or door is tilted |
+Each configured device creates these adapter datapoints:
 
-Datapoint IDs are entered as full ioBroker object IDs. Actuator and contact datapoints are optional so devices with different capabilities can be configured.
+- `devices.<id>.commands.open` and `devices.<id>.commands.close`: write `true` to send the configured JSON value to the mapped actuator datapoint.
+- `devices.<id>.commands.position`: write a percentage from 0 (closed) to 100 (open). The adapter maps this to the configured closed and open endpoint values.
+- `devices.<id>.status.closed` and `devices.<id>.status.tilted`: read-only boolean mirrors of the configured contacts. Each contact can be inverted for sensors with opposite polarity.
+
+Open/close values accept JSON literals such as `true`, `false`, `1`, `0`, or quoted strings such as `"OPEN"`. The defaults are `true`. Configure these values to match the target adapter's datapoints.
 
 ## Planned capabilities
 
@@ -30,11 +26,11 @@ Datapoint IDs are entered as full ioBroker object IDs. Actuator and contact data
 
 ## Current status
 
-This repository contains the initial adapter structure and graphical device configuration. The automatic control, schedules, sun calculations, safety behavior, and scenario engine are not implemented yet. Configuring devices does not move them.
+The adapter now provides device configuration, normalized manual commands, and contact state mirroring. Automatic schedules, sun calculations, safety behavior, and the scenario engine are not implemented yet. Contact values are displayed, but they do not currently block commands or move devices automatically.
 
 ## Development
 
-The adapter is a Node.js package named `iobroker.shutter-master`. The admin interface uses ioBroker's JSON configuration format.
+The adapter is a Node.js package named `iobroker.shutter-master`. Its admin interface uses ioBroker's JSON configuration format.
 
 ```sh
 npm install
