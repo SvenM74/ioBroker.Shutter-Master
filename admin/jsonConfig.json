@@ -1,0 +1,65 @@
+{
+  "type": "panel",
+  "items": {
+    "devices": {
+      "type": "table",
+      "label": "Beschattungsgeräte",
+      "help": "Lege hier jedes Rollo, jede Jalousie und jede Markise an. Trage die vollständigen ioBroker-Datenpunkt-IDs ein. Die automatische Steuerung wird in einem späteren Entwicklungsschritt ergänzt.",
+      "useCardFor": ["xs", "sm"],
+      "titleAttribute": "name",
+      "items": [
+        {
+          "type": "text",
+          "attr": "name",
+          "title": "Name",
+          "default": ""
+        },
+        {
+          "type": "select",
+          "attr": "deviceType",
+          "title": "Gerätetyp",
+          "options": [
+            {
+              "value": "shutter",
+              "label": "Rollo"
+            },
+            {
+              "value": "blind",
+              "label": "Jalousie"
+            },
+            {
+              "value": "awning",
+              "label": "Markise"
+            }
+          ],
+          "default": "shutter"
+        },
+        {
+          "type": "text",
+          "attr": "openId",
+          "title": "Datenpunkt: Öffnen"
+        },
+        {
+          "type": "text",
+          "attr": "closeId",
+          "title": "Datenpunkt: Schließen"
+        },
+        {
+          "type": "text",
+          "attr": "positionId",
+          "title": "Datenpunkt: Zielposition (optional)"
+        },
+        {
+          "type": "text",
+          "attr": "closedContactId",
+          "title": "Kontakt: geschlossen (optional)"
+        },
+        {
+          "type": "text",
+          "attr": "tiltedContactId",
+          "title": "Kontakt: gekippt (optional)"
+        }
+      ]
+    }
+  }
+}
