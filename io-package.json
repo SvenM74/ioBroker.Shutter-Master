@@ -1,0 +1,78 @@
+{
+  "common": {
+    "name": "shutter-master",
+    "version": "0.1.0",
+    "title": "Shutter Master",
+    "titleLang": {
+      "en": "Shutter Master",
+      "de": "Shutter Master"
+    },
+    "desc": {
+      "en": "Manufacturer-independent scenario-based control for shutters, blinds, and awnings",
+      "de": "Herstellerunabhängige, szenarienbasierte Steuerung von Rollos, Jalousien und Markisen"
+    },
+    "authors": [
+      "Sven Matern"
+    ],
+    "license": "MIT",
+    "platform": "Javascript/Node.js",
+    "mode": "daemon",
+    "type": "logic",
+    "connectionType": "local",
+    "dataSource": "push",
+    "adminUI": {
+      "config": "json"
+    },
+    "tier": 3,
+    "enabled": true,
+    "compact": true,
+    "messagebox": false,
+    "dependencies": [
+      {
+        "js-controller": ">=5.0.0"
+      },
+      {
+        "admin": ">=6.0.0"
+      }
+    ],
+    "keywords": [
+      "iobroker",
+      "shutter",
+      "blind",
+      "awning",
+      "smart-home"
+    ],
+    "news": {
+      "NEXT": {
+        "en": "Initial adapter structure and device configuration",
+        "de": "Erste Adapterstruktur und Gerätekonfiguration"
+      }
+    },
+    "instanceObjects": [
+      {
+        "_id": "info",
+        "type": "channel",
+        "common": {
+          "name": "Adapter information"
+        },
+        "native": {}
+      },
+      {
+        "_id": "info.connection",
+        "type": "state",
+        "common": {
+          "name": "Connection status",
+          "type": "boolean",
+          "role": "indicator.connected",
+          "read": true,
+          "write": false,
+          "def": true
+        },
+        "native": {}
+      }
+    ]
+  },
+  "native": {
+    "devices": []
+  }
+}
