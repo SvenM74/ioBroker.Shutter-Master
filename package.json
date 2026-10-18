@@ -1,0 +1,25 @@
+{
+  "name": "iobroker.shutter-master",
+  "version": "0.1.0",
+  "description": "Manufacturer-independent scenario-based shading control for ioBroker",
+  "main": "main.js",
+  "scripts": {
+    "start": "node main.js",
+    "check": "node --check main.js"
+  },
+  "keywords": [
+    "iobroker",
+    "shutter",
+    "blind",
+    "awning",
+    "smart-home"
+  ],
+  "author": "",
+  "license": "MIT",
+  "engines": {
+    "node": ">=22"
+  },
+  "dependencies": {
+    "@iobroker/adapter-core": "^3.3.0"
+  }
+}
