@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "shutter-master",
-    "version": "0.3.3",
+    "version": "0.4.0",
     "title": "Shutter Master",
     "titleLang": {
       "en": "Shutter Master",
@@ -44,8 +44,8 @@
     ],
     "news": {
       "NEXT": {
-        "en": "Show only the device name in the Shelly shutter selection",
-        "de": "In der Shelly-Shutter-Auswahl nur den Rollonamen anzeigen"
+        "en": "Discover Device Manager shading devices, prefer linked datapoints, and sort devices alphabetically",
+        "de": "Beschattungsgeräte aus dem Device Manager erkennen, verknüpfte Datenpunkte bevorzugen und alphabetisch sortieren"
       }
     },
     "instanceObjects": [

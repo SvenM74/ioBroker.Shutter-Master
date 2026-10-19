@@ -44,3 +44,8 @@ Contributions and feedback are welcome.
 The instance configuration detects writable Shelly position states with the `level.blind` role only when their channel is identified as a shutter, roller, cover, blind, or equivalent. Favorite presets are excluded, and each detected channel appears once.
 
 Choose a detected roller by its device name; channel names and datapoint IDs are used internally and hidden in the selection. Use **Add selected relay to device list**. Shutter Master creates a device row and maps the Shelly position state to position, open, and close commands. The state limits are used for closed and open values. Contacts can still be added manually in the device table. Automatic schedules and rule execution remain future work.
+
+
+## Device Manager discovery
+
+The instance configuration discovers writable shutter position states from Shelly and from the ioBroker Device Manager links under `alias.0`. When a Device Manager link points to the same Shelly device, Shutter Master prefers that linked datapoint. Other linked roller and awning devices are included as well. The selection and configured device list are sorted alphabetically by device name. The visible device list starts with the device name, source, and underlying adapter data source; technical datapoint mappings remain internal.

@@ -1,39 +1,10 @@
 {
   "type": "panel",
   "items": {
-    "shellyShutter": {
-      "type": "selectSendTo",
-      "label": "Shelly-Rollladenrelais auswählen",
-      "help": "Zeigt Shelly-Kanäle an, die als Shutter, Roller, Cover, Rollladen oder Jalousie konfiguriert sind. Favoriten-Presets werden ausgeschlossen.",
-      "command": "discoverShellyShutters",
-      "multiple": false,
-      "manual": false,
-      "noTranslation": true,
-      "doNotSave": true
-    },
-    "addShellyShutter": {
-      "type": "sendTo",
-      "label": "Ausgewähltes Relais in die Geräteliste aufnehmen",
-      "help": "Übernimmt das ausgewählte Shelly-Rollladenrelais als Gerät. Positions-, Öffnen- und Schließen-Datenpunkt werden automatisch zugeordnet.",
-      "command": "addShellyShutter",
-      "jsonData": "{\"channelId\":\"${data.shellyShutter}\"}",
-      "variant": "contained",
-      "showProcess": true,
-      "useNative": true,
-      "result": {
-        "de": "Shelly-Rollladenrelais wurde in die Geräteliste aufgenommen.",
-        "en": "Shelly shutter relay was added to the device list."
-      },
-      "error": {
-        "de": "Shelly-Rollladenrelais konnte nicht aufgenommen werden.",
-        "en": "Could not add the Shelly shutter relay."
-      },
-      "disabled": "!data.shellyShutter"
-    },
     "devices": {
       "type": "table",
       "label": "Beschattungsgeräte",
-      "help": "Lege hier jedes Rollo, jede Jalousie und jede Markise an. Datenpunkt-IDs sind vollständige ioBroker-IDs. Open und Close senden den konfigurierten JSON-Wert. Die Positionssteuerung verwendet 0 = geschlossen und 100 = geöffnet. Kontakte werden gelesen und hier angezeigt; automatische Regeln folgen später.",
+      "help": "Die Geräteliste zeigt zunächst nur Name, Quelle und Datenquelle. Technische Datenpunkt-Zuordnungen werden intern gespeichert; automatische Regeln folgen später.",
       "useCardFor": [
         "xs",
         "sm"
@@ -42,15 +13,32 @@
       "items": [
         {
           "type": "text",
-          "attr": "deviceId",
-          "title": "Interne ID (stabil, z. B. wohnzimmer)",
+          "attr": "name",
+          "title": "Gerätename",
           "default": ""
         },
         {
           "type": "text",
-          "attr": "name",
-          "title": "Anzeigename",
-          "default": ""
+          "attr": "source",
+          "title": "Quelle",
+          "default": "",
+          "readOnly": true,
+          "defaultFunc": "data.positionId && data.positionId.startsWith('alias.0.') ? 'Device Manager' : 'Direkt'"
+        },
+        {
+          "type": "text",
+          "attr": "dataSource",
+          "title": "Datenquelle",
+          "default": "",
+          "readOnly": true,
+          "defaultFunc": "data.positionId ? (data.positionId.startsWith('shelly.') ? 'Shelly' : data.positionId.split('.')[0]) : ''"
+        },
+        {
+          "type": "text",
+          "attr": "deviceId",
+          "title": "Interne ID (stabil, z. B. wohnzimmer)",
+          "default": "",
+          "hidden": true
         },
         {
           "type": "select",
@@ -70,70 +58,111 @@
               "label": "Markise"
             }
           ],
-          "default": "shutter"
+          "default": "shutter",
+          "hidden": true
         },
         {
           "type": "text",
           "attr": "openId",
-          "title": "Datenpunkt: Öffnen"
+          "title": "Datenpunkt: Öffnen",
+          "hidden": true
         },
         {
           "type": "text",
           "attr": "openValue",
           "title": "Wert zum Öffnen (JSON, Standard true)",
-          "default": "true"
+          "default": "true",
+          "hidden": true
         },
         {
           "type": "text",
           "attr": "closeId",
-          "title": "Datenpunkt: Schließen"
+          "title": "Datenpunkt: Schließen",
+          "hidden": true
         },
         {
           "type": "text",
           "attr": "closeValue",
           "title": "Wert zum Schließen (JSON, Standard true)",
-          "default": "true"
+          "default": "true",
+          "hidden": true
         },
         {
           "type": "text",
           "attr": "positionId",
-          "title": "Datenpunkt: Position (optional)"
+          "title": "Datenpunkt: Position (optional)",
+          "hidden": true
         },
         {
           "type": "number",
           "attr": "positionClosedValue",
           "title": "Positionswert für geschlossen",
-          "default": 0
+          "default": 0,
+          "hidden": true
         },
         {
           "type": "number",
           "attr": "positionOpenValue",
           "title": "Positionswert für geöffnet",
-          "default": 100
+          "default": 100,
+          "hidden": true
         },
         {
           "type": "text",
           "attr": "closedContactId",
-          "title": "Kontakt-Datenpunkt: geschlossen (optional)"
+          "title": "Kontakt-Datenpunkt: geschlossen (optional)",
+          "hidden": true
         },
         {
           "type": "checkbox",
           "attr": "closedContactInvert",
           "title": "Kontaktwert für „geschlossen“ invertieren",
-          "default": false
+          "default": false,
+          "hidden": true
         },
         {
           "type": "text",
           "attr": "tiltedContactId",
-          "title": "Kontakt-Datenpunkt: gekippt (optional)"
+          "title": "Kontakt-Datenpunkt: gekippt (optional)",
+          "hidden": true
         },
         {
           "type": "checkbox",
           "attr": "tiltedContactInvert",
           "title": "Kontaktwert für „gekippt“ invertieren",
-          "default": false
+          "default": false,
+          "hidden": true
         }
       ]
+    },
+    "shadingDevice": {
+      "type": "selectSendTo",
+      "label": "Beschattungsgerät auswählen",
+      "help": "Zeigt Shelly-Rollläden sowie Rollos und Markisen aus dem Device Manager. Verknüpfte Geräte werden bevorzugt, damit die dort zugeordneten Datenpunkte verwendet werden.",
+      "command": "discoverShadingDevices",
+      "multiple": false,
+      "manual": false,
+      "noTranslation": true,
+      "doNotSave": true
+    },
+    "addShadingDevice": {
+      "type": "sendTo",
+      "label": "Ausgewähltes Gerät in die Geräteliste aufnehmen",
+      "help": "Übernimmt das ausgewählte Rollo oder die Markise. Die erkannte Positionssteuerung wird intern zugeordnet.",
+      "command": "addShadingDevice",
+      "jsonData": "{\\\"key\\\":\\\"${data.shadingDevice}\\\"}",
+      "variant": "contained",
+      "showProcess": true,
+      "useNative": true,
+      "result": {
+        "de": "Beschattungsgerät wurde in die Geräteliste aufgenommen.",
+        "en": "Shading device was added to the device list."
+      },
+      "error": {
+        "de": "Beschattungsgerät konnte nicht aufgenommen werden.",
+        "en": "Could not add the shading device."
+      },
+      "disabled": "!data.shadingDevice"
     }
   }
 }
