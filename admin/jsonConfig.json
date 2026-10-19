@@ -22,7 +22,8 @@
           "attr": "room",
           "title": "Raum",
           "default": "",
-          "readOnly": true
+          "readOnly": true,
+          "sort": true
         },
         {
           "type": "text",
@@ -30,7 +31,8 @@
           "title": "Quelle",
           "default": "",
           "readOnly": true,
-          "defaultFunc": "data.positionId && data.positionId.startsWith('alias.0.') ? 'Device Manager' : 'Direkt'"
+          "defaultFunc": "data.positionId && data.positionId.startsWith('alias.0.') ? 'Device Manager' : 'Direkt'",
+          "sort": true
         },
         {
           "type": "text",
@@ -38,7 +40,8 @@
           "title": "Datenquelle",
           "default": "",
           "readOnly": true,
-          "defaultFunc": "data.positionId ? (data.positionId.startsWith('shelly.') ? 'Shelly' : data.positionId.split('.')[0]) : ''"
+          "defaultFunc": "data.positionId ? (data.positionId.startsWith('shelly.') ? 'Shelly' : data.positionId.split('.')[0]) : ''",
+          "sort": true
         },
         {
           "type": "sendTo",
@@ -49,12 +52,10 @@
           "jsonData": "{\"deviceId\":\"${data.deviceId}\",\"devices\":${JSON.stringify(globalData.devices || [])},\"deviceMappings\":${JSON.stringify(globalData.deviceMappings || {})}}",
           "useNative": true,
           "showProcess": false,
-          "width": "110px",
-          "label": "Entfernen"
+          "width": "110px"
         }
       ],
-      "noDelete": true,
-      "label": "Beschattungsgeräte"
+      "noDelete": true
     },
     "shadingDevice": {
       "type": "selectSendTo",
