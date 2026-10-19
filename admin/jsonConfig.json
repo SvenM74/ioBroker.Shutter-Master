@@ -1,6 +1,78 @@
 {
   "type": "panel",
   "items": {
+    "sortByName": {
+      "type": "sendTo",
+      "label": "Gerätename",
+      "title": "Nach Gerätename sortieren. Noch einmal drücken, um die Sortierrichtung umzukehren.",
+      "command": "sortShadingDevices",
+      "jsonData": "{\"sortBy\":\"name\",\"devices\":${JSON.stringify(data.devices || [])},\"deviceMappings\":${JSON.stringify(data.deviceMappings || {})},\"sortState\":${JSON.stringify(data.deviceSort || {})}}",
+      "useNative": true,
+      "showProcess": true,
+      "xs": 3,
+      "sm": 3,
+      "controlStyle": {
+        "justifyContent": "flex-start",
+        "padding": "4px 8px",
+        "minWidth": 0,
+        "textTransform": "none",
+        "fontWeight": 600
+      }
+    },
+    "sortByRoom": {
+      "type": "sendTo",
+      "label": "Raum",
+      "title": "Nach Raum sortieren. Noch einmal drücken, um die Sortierrichtung umzukehren.",
+      "command": "sortShadingDevices",
+      "jsonData": "{\"sortBy\":\"room\",\"devices\":${JSON.stringify(data.devices || [])},\"deviceMappings\":${JSON.stringify(data.deviceMappings || {})},\"sortState\":${JSON.stringify(data.deviceSort || {})}}",
+      "useNative": true,
+      "showProcess": true,
+      "xs": 3,
+      "sm": 3,
+      "controlStyle": {
+        "justifyContent": "flex-start",
+        "padding": "4px 8px",
+        "minWidth": 0,
+        "textTransform": "none",
+        "fontWeight": 600
+      }
+    },
+    "sortBySource": {
+      "type": "sendTo",
+      "label": "Quelle",
+      "title": "Nach Quelle sortieren. Noch einmal drücken, um die Sortierrichtung umzukehren.",
+      "command": "sortShadingDevices",
+      "jsonData": "{\"sortBy\":\"source\",\"devices\":${JSON.stringify(data.devices || [])},\"deviceMappings\":${JSON.stringify(data.deviceMappings || {})},\"sortState\":${JSON.stringify(data.deviceSort || {})}}",
+      "useNative": true,
+      "showProcess": true,
+      "xs": 3,
+      "sm": 3,
+      "controlStyle": {
+        "justifyContent": "flex-start",
+        "padding": "4px 8px",
+        "minWidth": 0,
+        "textTransform": "none",
+        "fontWeight": 600
+      }
+    },
+    "sortByDataSource": {
+      "type": "sendTo",
+      "label": "Datenquelle",
+      "title": "Nach Datenquelle sortieren. Noch einmal drücken, um die Sortierrichtung umzukehren.",
+      "command": "sortShadingDevices",
+      "jsonData": "{\"sortBy\":\"dataSource\",\"devices\":${JSON.stringify(data.devices || [])},\"deviceMappings\":${JSON.stringify(data.deviceMappings || {})},\"sortState\":${JSON.stringify(data.deviceSort || {})}}",
+      "useNative": true,
+      "showProcess": true,
+      "xs": 3,
+      "sm": 3,
+      "controlStyle": {
+        "justifyContent": "flex-start",
+        "padding": "4px 8px",
+        "minWidth": 0,
+        "textTransform": "none",
+        "fontWeight": 600
+      }
+    },
     "devices": {
       "type": "table",
       "help": "Die Geräteliste zeigt Gerätenamen, Raum, Quelle und Datenquelle. Technische Datenpunkt-Zuordnungen werden intern gespeichert; automatische Regeln folgen später.",
@@ -13,49 +85,33 @@
         {
           "type": "text",
           "attr": "name",
-          "title": "Gerätename",
-          "default": "",
-          "sort": true
+          "title": "",
+          "default": ""
         },
         {
           "type": "text",
           "attr": "room",
-          "title": "Raum",
+          "title": "",
           "default": "",
-          "readOnly": true,
-          "sort": true
+          "readOnly": true
         },
         {
           "type": "text",
           "attr": "source",
-          "title": "Quelle",
+          "title": "",
           "default": "",
           "readOnly": true,
-          "defaultFunc": "data.positionId && data.positionId.startsWith('alias.0.') ? 'Device Manager' : 'Direkt'",
-          "sort": true
+          "defaultFunc": "data.positionId && data.positionId.startsWith('alias.0.') ? 'Device Manager' : 'Direkt'"
         },
         {
           "type": "text",
           "attr": "dataSource",
-          "title": "Datenquelle",
+          "title": "",
           "default": "",
           "readOnly": true,
-          "defaultFunc": "data.positionId ? (data.positionId.startsWith('shelly.') ? 'Shelly' : data.positionId.split('.')[0]) : ''",
-          "sort": true
-        },
-        {
-          "type": "sendTo",
-          "attr": "_remove",
-          "title": "Gerät entfernen",
-          "icon": "delete",
-          "command": "removeShadingDevice",
-          "jsonData": "{\"deviceId\":\"${data.deviceId}\",\"devices\":${JSON.stringify(globalData.devices || [])},\"deviceMappings\":${JSON.stringify(globalData.deviceMappings || {})}}",
-          "useNative": true,
-          "showProcess": false,
-          "width": "110px"
+          "defaultFunc": "data.positionId ? (data.positionId.startsWith('shelly.') ? 'Shelly' : data.positionId.split('.')[0]) : ''"
         }
-      ],
-      "noDelete": true
+      ]
     },
     "shadingDevice": {
       "type": "selectSendTo",
@@ -94,6 +150,12 @@
     "deviceMappings": {
       "type": "jsonEditor",
       "label": "Interne Gerätezuordnungen",
+      "hidden": true,
+      "default": {}
+    },
+    "deviceSort": {
+      "type": "jsonEditor",
+      "label": "Interner Sortierzustand",
       "hidden": true,
       "default": {}
     }
