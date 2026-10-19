@@ -9,14 +9,15 @@
       "jsonData": "{\"sortBy\":\"name\",\"devices\":${JSON.stringify(data.devices || [])},\"deviceMappings\":${JSON.stringify(data.deviceMappings || {})},\"sortState\":${JSON.stringify(data.deviceSort || {})}}",
       "useNative": true,
       "showProcess": true,
-      "xs": 3,
-      "sm": 3,
+      "xs": 2,
+      "sm": 2,
       "controlStyle": {
         "justifyContent": "flex-start",
-        "padding": "4px 8px",
+        "padding": "3px 5px",
         "minWidth": 0,
         "textTransform": "none",
-        "fontWeight": 600
+        "fontWeight": 600,
+        "fontSize": "0.75rem"
       }
     },
     "sortByRoom": {
@@ -27,14 +28,15 @@
       "jsonData": "{\"sortBy\":\"room\",\"devices\":${JSON.stringify(data.devices || [])},\"deviceMappings\":${JSON.stringify(data.deviceMappings || {})},\"sortState\":${JSON.stringify(data.deviceSort || {})}}",
       "useNative": true,
       "showProcess": true,
-      "xs": 3,
-      "sm": 3,
+      "xs": 2,
+      "sm": 2,
       "controlStyle": {
         "justifyContent": "flex-start",
-        "padding": "4px 8px",
+        "padding": "3px 5px",
         "minWidth": 0,
         "textTransform": "none",
-        "fontWeight": 600
+        "fontWeight": 600,
+        "fontSize": "0.75rem"
       }
     },
     "sortBySource": {
@@ -45,14 +47,15 @@
       "jsonData": "{\"sortBy\":\"source\",\"devices\":${JSON.stringify(data.devices || [])},\"deviceMappings\":${JSON.stringify(data.deviceMappings || {})},\"sortState\":${JSON.stringify(data.deviceSort || {})}}",
       "useNative": true,
       "showProcess": true,
-      "xs": 3,
-      "sm": 3,
+      "xs": 2,
+      "sm": 2,
       "controlStyle": {
         "justifyContent": "flex-start",
-        "padding": "4px 8px",
+        "padding": "3px 5px",
         "minWidth": 0,
         "textTransform": "none",
-        "fontWeight": 600
+        "fontWeight": 600,
+        "fontSize": "0.75rem"
       }
     },
     "sortByDataSource": {
@@ -63,19 +66,20 @@
       "jsonData": "{\"sortBy\":\"dataSource\",\"devices\":${JSON.stringify(data.devices || [])},\"deviceMappings\":${JSON.stringify(data.deviceMappings || {})},\"sortState\":${JSON.stringify(data.deviceSort || {})}}",
       "useNative": true,
       "showProcess": true,
-      "xs": 3,
-      "sm": 3,
+      "xs": 2,
+      "sm": 2,
       "controlStyle": {
         "justifyContent": "flex-start",
-        "padding": "4px 8px",
+        "padding": "3px 5px",
         "minWidth": 0,
         "textTransform": "none",
-        "fontWeight": 600
+        "fontWeight": 600,
+        "fontSize": "0.75rem"
       }
     },
     "devices": {
       "type": "table",
-      "help": "Die Geräteliste zeigt Gerätenamen, Raum, Quelle und Datenquelle. Technische Datenpunkt-Zuordnungen werden intern gespeichert; automatische Regeln folgen später.",
+      "help": "Die Checkboxen markieren, ob ein Beschattungsgerät später morgens/abends zeitgesteuert oder abhängig vom Sonnenstand gefahren werden soll.",
       "useCardFor": [
         "xs",
         "sm"
@@ -86,14 +90,20 @@
           "type": "text",
           "attr": "name",
           "title": "",
-          "default": ""
+          "default": "",
+          "style": {
+            "fontSize": "0.75rem"
+          }
         },
         {
           "type": "text",
           "attr": "room",
           "title": "",
           "default": "",
-          "readOnly": true
+          "readOnly": true,
+          "style": {
+            "fontSize": "0.75rem"
+          }
         },
         {
           "type": "text",
@@ -101,7 +111,10 @@
           "title": "",
           "default": "",
           "readOnly": true,
-          "defaultFunc": "data.positionId && data.positionId.startsWith('alias.0.') ? 'Device Manager' : 'Direkt'"
+          "defaultFunc": "data.positionId && data.positionId.startsWith('alias.0.') ? 'Device Manager' : 'Direkt'",
+          "style": {
+            "fontSize": "0.75rem"
+          }
         },
         {
           "type": "text",
@@ -109,9 +122,33 @@
           "title": "",
           "default": "",
           "readOnly": true,
-          "defaultFunc": "data.positionId ? (data.positionId.startsWith('shelly.') ? 'Shelly' : data.positionId.split('.')[0]) : ''"
+          "defaultFunc": "data.positionId ? (data.positionId.startsWith('shelly.') ? 'Shelly' : data.positionId.split('.')[0]) : ''",
+          "style": {
+            "fontSize": "0.75rem"
+          }
+        },
+        {
+          "type": "checkbox",
+          "attr": "timeBased",
+          "title": "",
+          "label": "",
+          "default": false,
+          "style": {
+            "fontSize": "0.75rem"
+          }
+        },
+        {
+          "type": "checkbox",
+          "attr": "sunPosition",
+          "title": "",
+          "label": "",
+          "default": false,
+          "style": {
+            "fontSize": "0.75rem"
+          }
         }
-      ]
+      ],
+      "compact": true
     },
     "shadingDevice": {
       "type": "selectSendTo",
@@ -158,6 +195,28 @@
       "label": "Interner Sortierzustand",
       "hidden": true,
       "default": {}
+    },
+    "sortByTimeControl": {
+      "type": "staticText",
+      "text": "Morgens/abends",
+      "xs": 2,
+      "sm": 2,
+      "style": {
+        "fontSize": "0.75rem",
+        "fontWeight": 600,
+        "padding": "4px 5px"
+      }
+    },
+    "sortBySunPosition": {
+      "type": "staticText",
+      "text": "Sonnenstand",
+      "xs": 2,
+      "sm": 2,
+      "style": {
+        "fontSize": "0.75rem",
+        "fontWeight": 600,
+        "padding": "4px 5px"
+      }
     }
   }
 }

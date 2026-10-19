@@ -380,6 +380,8 @@ class ShutterMaster extends utils.Adapter {
       source: candidate.source,
       dataSource: candidate.dataSource,
       room: candidate.room || "",
+      timeBased: false,
+      sunPosition: false,
     };
     deviceMappings[deviceId] = {
       deviceSourceId: candidate.key,
