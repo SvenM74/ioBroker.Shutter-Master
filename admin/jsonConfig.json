@@ -1,39 +1,6 @@
 {
   "type": "panel",
   "items": {
-    "shadingDevicesTitle": {
-      "type": "header",
-      "text": "Beschattungsgeräte",
-      "size": 5,
-      "xs": 8,
-      "sm": 8
-    },
-    "sortDevicesAscending": {
-      "type": "sendTo",
-      "label": "",
-      "button": "↑",
-      "buttonTooltip": "Alphabetisch aufsteigend sortieren (A–Z)",
-      "title": "A–Z",
-      "command": "sortShadingDevices",
-      "jsonData": "{\"direction\":\"asc\",\"devices\":${JSON.stringify(data.devices || [])},\"deviceMappings\":${JSON.stringify(data.deviceMappings || {})}}",
-      "useNative": true,
-      "showProcess": true,
-      "xs": 2,
-      "sm": 2
-    },
-    "sortDevicesDescending": {
-      "type": "sendTo",
-      "label": "",
-      "button": "↓",
-      "buttonTooltip": "Alphabetisch absteigend sortieren (Z–A)",
-      "title": "Z–A",
-      "command": "sortShadingDevices",
-      "jsonData": "{\"direction\":\"desc\",\"devices\":${JSON.stringify(data.devices || [])},\"deviceMappings\":${JSON.stringify(data.deviceMappings || {})}}",
-      "useNative": true,
-      "showProcess": true,
-      "xs": 2,
-      "sm": 2
-    },
     "devices": {
       "type": "table",
       "help": "Die Geräteliste zeigt Gerätenamen, Raum, Quelle und Datenquelle. Technische Datenpunkt-Zuordnungen werden intern gespeichert; automatische Regeln folgen später.",
@@ -47,7 +14,8 @@
           "type": "text",
           "attr": "name",
           "title": "Gerätename",
-          "default": ""
+          "default": "",
+          "sort": true
         },
         {
           "type": "text",
@@ -85,7 +53,8 @@
           "width": "110px"
         }
       ],
-      "noDelete": true
+      "noDelete": true,
+      "label": "Beschattungsgeräte"
     },
     "shadingDevice": {
       "type": "selectSendTo",
