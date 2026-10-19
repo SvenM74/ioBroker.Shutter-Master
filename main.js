@@ -74,7 +74,9 @@ class ShutterMaster extends utils.Adapter {
       const channelName =
         this.resolveObjectName(channel?.common?.name) ||
         candidate.channelId.slice(candidate.channelId.lastIndexOf(".") + 1);
-      const name = [deviceName, channelName].filter(Boolean).join(" / ") || candidate.channelId;
+      if (!this.isShellyShutterChannel(candidate.channelId, channelName)) return null;
+
+      const name = [deviceName, channelName].filter(Boolean).join(" / ") || channelName;
       const min = Number(candidate.object.common.min);
       const max = Number(candidate.object.common.max);
 
@@ -85,7 +87,18 @@ class ShutterMaster extends utils.Adapter {
         min: Number.isFinite(min) ? min : 0,
         max: Number.isFinite(max) ? max : 100,
       };
-    }));
+    })).then(candidates => candidates.filter(Boolean));
+  }
+
+  isShellyShutterChannel(channelId, channelName) {
+    const idName = channelId.slice(channelId.lastIndexOf(".") + 1);
+    const text = `${idName} ${channelName}`.toLowerCase();
+
+    // Shelly can expose favorite positions with the same level.blind role.
+    // Those are presets, not independent shutter channels.
+    if (/favorites?/i.test(text)) return false;
+
+    return /(shutter|roller|cover|rollladen|jalousie|blind)/.test(text);
   }
 
   getShellyPositionRank(candidate) {
@@ -104,8 +117,7 @@ class ShutterMaster extends utils.Adapter {
     return candidates
       .map(candidate => ({
         value: candidate.channelId,
-        label: `${candidate.name} — ${candidate.channelId}`,
-        description: candidate.positionId,
+        label: candidate.name,
       }))
       .sort((a, b) => a.label.localeCompare(b.label));
   }

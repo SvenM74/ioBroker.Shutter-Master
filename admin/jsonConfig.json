@@ -4,7 +4,7 @@
     "shellyShutter": {
       "type": "selectSendTo",
       "label": "Shelly-Rollladenrelais auswählen",
-      "help": "Zeigt jedes erkannte Shelly-Rollladenrelais einmal an. Die Auswahl basiert auf beschreibbaren Positions-Datenpunkten mit der Rolle level.blind.",
+      "help": "Zeigt Shelly-Kanäle an, die als Shutter, Roller, Cover, Rollladen oder Jalousie konfiguriert sind. Favoriten-Presets werden ausgeschlossen.",
       "command": "discoverShellyShutters",
       "multiple": false,
       "manual": false,
