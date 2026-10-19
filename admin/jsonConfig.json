@@ -50,14 +50,15 @@
       "multiple": false,
       "manual": false,
       "noTranslation": true,
-      "doNotSave": true
+      "doNotSave": true,
+      "jsonData": "{\"devices\":${JSON.stringify(data.devices || [])},\"deviceMappings\":${JSON.stringify(data.deviceMappings || {})}}"
     },
     "addShadingDevice": {
       "type": "sendTo",
       "label": "Ausgewähltes Gerät in die Geräteliste aufnehmen",
       "help": "Übernimmt das ausgewählte Rollo oder die Markise. Die erkannte Positionssteuerung wird intern zugeordnet.",
       "command": "addShadingDevice",
-      "jsonData": "{\\\"key\\\":\\\"${data.shadingDevice}\\\"}",
+      "jsonData": "{\"key\":\"${data.shadingDevice}\",\"devices\":${JSON.stringify(data.devices || [])},\"deviceMappings\":${JSON.stringify(data.deviceMappings || {})}}",
       "variant": "contained",
       "showProcess": true,
       "useNative": true,

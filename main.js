@@ -6,7 +6,6 @@ class ShutterMaster extends utils.Adapter {
     this.commandMap = new Map();
     this.contactMap = new Map();
     this.subscribedForeignIds = new Set();
-    this.addedShellyChannels = new Set();
 
     this.on("ready", () => void this.onReady());
     this.on("stateChange", (id, state) => void this.onStateChange(id, state));
@@ -19,7 +18,7 @@ class ShutterMaster extends utils.Adapter {
 
     try {
       if (obj.command === "discoverShadingDevices" || obj.command === "discoverShellyShutters") {
-        const options = await this.findShadingDevices();
+        const options = await this.findShadingDevices(obj.message);
         this.sendTo(obj.from, obj.command, options, obj.callback);
         return;
       }
@@ -220,7 +219,17 @@ class ShutterMaster extends utils.Adapter {
     return knownNames[adapter] || (adapter ? adapter[0].toUpperCase() + adapter.slice(1) : "Unbekannt");
   }
 
-  async getShadingCandidates() {
+  getDeviceConfigOverrides(value) {
+    if (!value || typeof value !== "object" || Array.isArray(value)) return {};
+    const overrides = {};
+    if (Array.isArray(value.devices)) overrides.devices = value.devices;
+    if (value.deviceMappings && typeof value.deviceMappings === "object" && !Array.isArray(value.deviceMappings)) {
+      overrides.deviceMappings = value.deviceMappings;
+    }
+    return overrides;
+  }
+
+  async getShadingCandidates(configOverrides = {}) {
     const roomObjects = await this.getForeignObjectsAsync("enum.rooms.*", "enum").catch(() => ({}));
     const [shelly, deviceAdapter] = await Promise.all([
       this.getShellyShutterCandidates(roomObjects),
@@ -256,9 +265,10 @@ class ShutterMaster extends utils.Adapter {
         sourceIds: [candidate.positionId],
       }));
 
-    const addedDeviceKeys = new Set(this.addedShellyChannels);
-    const configuredDevices = Array.isArray(this.config?.devices) ? this.config.devices : [];
-    const deviceMappings = this.config?.deviceMappings || {};
+    const currentConfig = { ...(this.config || {}), ...(configOverrides || {}) };
+    const addedDeviceKeys = new Set();
+    const configuredDevices = Array.isArray(currentConfig.devices) ? currentConfig.devices : [];
+    const deviceMappings = currentConfig.deviceMappings || {};
     for (const device of configuredDevices) {
       const deviceId = this.normalizeDeviceId(device.deviceId);
       const mapping = deviceMappings[deviceId] || device;
@@ -274,8 +284,8 @@ class ShutterMaster extends utils.Adapter {
       );
   }
 
-  async findShadingDevices() {
-    const candidates = await this.getShadingCandidates();
+  async findShadingDevices(configOverrides = {}) {
+    const candidates = await this.getShadingCandidates(this.getDeviceConfigOverrides(configOverrides));
     return candidates.map(candidate => ({
       value: candidate.key,
       label: candidate.room ? `${candidate.name} / ${candidate.room}` : candidate.name,
@@ -293,16 +303,16 @@ class ShutterMaster extends utils.Adapter {
       return { error: "Bitte zuerst ein Beschattungsgerät auswählen." };
     }
 
-    const candidate = (await this.getShadingCandidates()).find(item => item.key === key);
+    const configOverrides = this.getDeviceConfigOverrides(message);
+    const candidate = (await this.getShadingCandidates(configOverrides)).find(item => item.key === key);
     if (!candidate) {
       return { error: "Das ausgewählte Beschattungsgerät wurde nicht gefunden. Bitte die Liste aktualisieren." };
     }
 
-    const currentConfig = this.config && typeof this.config === "object" ? this.config : {};
+    const currentConfig = { ...(this.config && typeof this.config === "object" ? this.config : {}), ...configOverrides };
     const devices = Array.isArray(currentConfig.devices) ? [...currentConfig.devices] : [];
     const deviceMappings = { ...(currentConfig.deviceMappings || {}) };
     if (
-      this.addedShellyChannels.has(candidate.key) ||
       devices.some(device => {
         const mapping = deviceMappings[this.normalizeDeviceId(device.deviceId)] || device;
         return (
@@ -343,7 +353,6 @@ class ShutterMaster extends utils.Adapter {
       tiltedContactInvert: false,
     };
 
-    this.addedShellyChannels.add(candidate.key);
     return {
       native: {
         ...currentConfig,
