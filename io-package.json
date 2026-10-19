@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "shutter-master",
-    "version": "0.4.1",
+    "version": "0.1.1",
     "title": "Shutter Master",
     "titleLang": {
       "en": "Shutter Master",
@@ -43,9 +43,9 @@
       "smart-home"
     ],
     "news": {
-      "NEXT": {
-        "en": "Keep datapoint mappings internal and remove technical columns from the device list",
-        "de": "Datenpunkt-Zuordnungen intern speichern und technische Spalten aus der Geräteliste entfernen"
+      "0.1.1": {
+        "en": "Discover and sort Shelly and Device Manager shading devices; keep datapoint mappings internal.",
+        "de": "Shelly- und Device-Manager-Beschattungsgeräte erkennen und sortieren; Datenpunktzuordnungen intern speichern."
       }
     },
     "instanceObjects": [
