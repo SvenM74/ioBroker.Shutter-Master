@@ -15,7 +15,8 @@
           "type": "text",
           "attr": "name",
           "title": "Gerätename",
-          "default": ""
+          "default": "",
+          "sort": true
         },
         {
           "type": "text",
