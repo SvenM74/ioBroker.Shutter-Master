@@ -231,6 +231,9 @@ class ShutterMaster extends utils.Adapter {
     if (value.deviceMappings && typeof value.deviceMappings === "object" && !Array.isArray(value.deviceMappings)) {
       overrides.deviceMappings = value.deviceMappings;
     }
+    if (value.deviceSort && typeof value.deviceSort === "object" && !Array.isArray(value.deviceSort)) {
+      overrides.deviceSort = value.deviceSort;
+    }
     return overrides;
   }
 

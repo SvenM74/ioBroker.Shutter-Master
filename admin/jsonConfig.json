@@ -122,7 +122,7 @@
       "manual": false,
       "noTranslation": true,
       "doNotSave": true,
-      "jsonData": "{\"devices\":${JSON.stringify(data.devices || [])},\"deviceMappings\":${JSON.stringify(data.deviceMappings || {})}}",
+      "jsonData": "{\"devices\":${JSON.stringify(data.devices || [])},\"deviceMappings\":${JSON.stringify(data.deviceMappings || {})},\"deviceSort\":${JSON.stringify(data.deviceSort || {})}}",
       "alsoDependsOn": [
         "devices",
         "deviceMappings"
@@ -133,7 +133,7 @@
       "label": "Ausgewähltes Gerät in die Geräteliste aufnehmen",
       "help": "Übernimmt das ausgewählte Rollo oder die Markise. Die erkannte Positionssteuerung wird intern zugeordnet.",
       "command": "addShadingDevice",
-      "jsonData": "{\"key\":\"${data.shadingDevice}\",\"devices\":${JSON.stringify(data.devices || [])},\"deviceMappings\":${JSON.stringify(data.deviceMappings || {})}}",
+      "jsonData": "{\"key\":\"${data.shadingDevice}\",\"devices\":${JSON.stringify(data.devices || [])},\"deviceMappings\":${JSON.stringify(data.deviceMappings || {})},\"deviceSort\":${JSON.stringify(data.deviceSort || {})}}",
       "variant": "contained",
       "showProcess": true,
       "useNative": true,
