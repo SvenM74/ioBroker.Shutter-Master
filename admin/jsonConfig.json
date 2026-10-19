@@ -1,221 +1,379 @@
 {
-  "type": "panel",
+  "type": "tabs",
   "items": {
-    "sortByName": {
-      "type": "sendTo",
-      "label": "Gerätename",
-      "title": "Nach Gerätename sortieren. Noch einmal drücken, um die Sortierrichtung umzukehren.",
-      "command": "sortShadingDevices",
-      "jsonData": "{\"sortBy\":\"name\",\"devices\":${JSON.stringify(data.devices || [])},\"deviceMappings\":${JSON.stringify(data.deviceMappings || {})},\"sortState\":${JSON.stringify(data.deviceSort || {})}}",
-      "useNative": true,
-      "showProcess": true,
-      "xs": 2,
-      "sm": 2,
-      "controlStyle": {
-        "justifyContent": "flex-start",
-        "padding": "3px 5px",
-        "minWidth": 0,
-        "textTransform": "none",
-        "fontWeight": 600,
-        "fontSize": "0.75rem"
+    "shadingDevices": {
+      "type": "panel",
+      "label": "Beschattungsgeräte",
+      "items": {
+        "devices": {
+          "type": "table",
+          "useCardFor": [
+            "xs",
+            "sm"
+          ],
+          "titleAttribute": "name",
+          "items": [
+            {
+              "type": "text",
+              "attr": "name",
+              "title": "Gerätename",
+              "default": "",
+              "style": {
+                "fontSize": "0.75rem"
+              },
+              "sort": true
+            },
+            {
+              "type": "text",
+              "attr": "room",
+              "title": "Raum",
+              "default": "",
+              "readOnly": true,
+              "style": {
+                "fontSize": "0.75rem"
+              },
+              "sort": true
+            },
+            {
+              "type": "text",
+              "attr": "source",
+              "title": "Quelle",
+              "default": "",
+              "readOnly": true,
+              "defaultFunc": "data.positionId && data.positionId.startsWith('alias.0.') ? 'Device Manager' : 'Direkt'",
+              "style": {
+                "fontSize": "0.75rem"
+              },
+              "sort": true
+            },
+            {
+              "type": "text",
+              "attr": "dataSource",
+              "title": "Datenquelle",
+              "default": "",
+              "readOnly": true,
+              "defaultFunc": "data.positionId ? (data.positionId.startsWith('shelly.') ? 'Shelly' : data.positionId.split('.')[0]) : ''",
+              "style": {
+                "fontSize": "0.75rem"
+              },
+              "sort": true
+            },
+            {
+              "type": "checkbox",
+              "attr": "timeBased",
+              "title": "Morgens/abends",
+              "label": "",
+              "default": false,
+              "style": {
+                "fontSize": "0.75rem"
+              },
+              "sort": false
+            },
+            {
+              "type": "checkbox",
+              "attr": "sunPosition",
+              "title": "Sonnenstand",
+              "label": "",
+              "default": false,
+              "style": {
+                "fontSize": "0.75rem"
+              },
+              "sort": false
+            },
+            {
+              "type": "checkbox",
+              "attr": "timeBased",
+              "title": "Morgens/abends",
+              "label": "",
+              "default": false,
+              "style": {
+                "fontSize": "0.75rem"
+              }
+            },
+            {
+              "type": "checkbox",
+              "attr": "sunPosition",
+              "title": "Sonnenstand",
+              "label": "",
+              "default": false,
+              "style": {
+                "fontSize": "0.75rem"
+              }
+            }
+          ],
+          "compact": true,
+          "label": "Beschattungsgeräte"
+        },
+        "shadingDevice": {
+          "type": "selectSendTo",
+          "label": "Beschattungsgerät auswählen",
+          "help": "Zeigt Shelly-Rollläden sowie Rollos und Markisen aus dem Device Manager. Verknüpfte Geräte werden bevorzugt, damit die dort zugeordneten Datenpunkte verwendet werden.",
+          "command": "discoverShadingDevices",
+          "multiple": false,
+          "manual": false,
+          "noTranslation": true,
+          "doNotSave": true,
+          "jsonData": "{\"devices\":${JSON.stringify(data.devices || [])},\"deviceMappings\":${JSON.stringify(data.deviceMappings || {})},\"deviceSort\":${JSON.stringify(data.deviceSort || {})}}",
+          "alsoDependsOn": [
+            "devices",
+            "deviceMappings"
+          ]
+        },
+        "addShadingDevice": {
+          "type": "sendTo",
+          "label": "Ausgewähltes Gerät in die Geräteliste aufnehmen",
+          "help": "Übernimmt das ausgewählte Rollo oder die Markise. Die erkannte Positionssteuerung wird intern zugeordnet.",
+          "command": "addShadingDevice",
+          "jsonData": "{\"key\":\"${data.shadingDevice}\",\"devices\":${JSON.stringify(data.devices || [])},\"deviceMappings\":${JSON.stringify(data.deviceMappings || {})},\"deviceSort\":${JSON.stringify(data.deviceSort || {})}}",
+          "variant": "contained",
+          "showProcess": true,
+          "useNative": true,
+          "result": {
+            "de": "Beschattungsgerät wurde in die Geräteliste aufgenommen.",
+            "en": "Shading device was added to the device list."
+          },
+          "error": {
+            "de": "Beschattungsgerät konnte nicht aufgenommen werden.",
+            "en": "Could not add the shading device."
+          },
+          "disabled": "!data.shadingDevice"
+        },
+        "deviceMappings": {
+          "type": "jsonEditor",
+          "label": "Interne Gerätezuordnungen",
+          "hidden": true,
+          "default": {}
+        }
       }
     },
-    "sortByRoom": {
-      "type": "sendTo",
-      "label": "Raum",
-      "title": "Nach Raum sortieren. Noch einmal drücken, um die Sortierrichtung umzukehren.",
-      "command": "sortShadingDevices",
-      "jsonData": "{\"sortBy\":\"room\",\"devices\":${JSON.stringify(data.devices || [])},\"deviceMappings\":${JSON.stringify(data.deviceMappings || {})},\"sortState\":${JSON.stringify(data.deviceSort || {})}}",
-      "useNative": true,
-      "showProcess": true,
-      "xs": 2,
-      "sm": 2,
-      "controlStyle": {
-        "justifyContent": "flex-start",
-        "padding": "3px 5px",
-        "minWidth": 0,
-        "textTransform": "none",
-        "fontWeight": 600,
-        "fontSize": "0.75rem"
+    "morningEvening": {
+      "type": "panel",
+      "label": "Morgens und abends",
+      "items": {
+        "morningHeader": {
+          "type": "header",
+          "text": "Morgens",
+          "size": 5,
+          "xs": 12
+        },
+        "morningOpenTime": {
+          "type": "timePicker",
+          "label": "Öffnen",
+          "format": "HH:mm",
+          "views": [
+            "hours",
+            "minutes"
+          ],
+          "returnFormat": "HH:mm:ss",
+          "xs": 6,
+          "default": ""
+        },
+        "morningCloseTime": {
+          "type": "timePicker",
+          "label": "Schließen",
+          "format": "HH:mm",
+          "views": [
+            "hours",
+            "minutes"
+          ],
+          "returnFormat": "HH:mm:ss",
+          "xs": 6,
+          "default": ""
+        },
+        "eveningHeader": {
+          "type": "header",
+          "text": "Abends",
+          "size": 5,
+          "xs": 12,
+          "newLine": true
+        },
+        "eveningOpenTime": {
+          "type": "timePicker",
+          "label": "Öffnen",
+          "format": "HH:mm",
+          "views": [
+            "hours",
+            "minutes"
+          ],
+          "returnFormat": "HH:mm:ss",
+          "xs": 6,
+          "default": ""
+        },
+        "eveningCloseTime": {
+          "type": "timePicker",
+          "label": "Schließen",
+          "format": "HH:mm",
+          "views": [
+            "hours",
+            "minutes"
+          ],
+          "returnFormat": "HH:mm:ss",
+          "xs": 6,
+          "default": ""
+        }
       }
     },
-    "sortBySource": {
-      "type": "sendTo",
-      "label": "Quelle",
-      "title": "Nach Quelle sortieren. Noch einmal drücken, um die Sortierrichtung umzukehren.",
-      "command": "sortShadingDevices",
-      "jsonData": "{\"sortBy\":\"source\",\"devices\":${JSON.stringify(data.devices || [])},\"deviceMappings\":${JSON.stringify(data.deviceMappings || {})},\"sortState\":${JSON.stringify(data.deviceSort || {})}}",
-      "useNative": true,
-      "showProcess": true,
-      "xs": 2,
-      "sm": 2,
-      "controlStyle": {
-        "justifyContent": "flex-start",
-        "padding": "3px 5px",
-        "minWidth": 0,
-        "textTransform": "none",
-        "fontWeight": 600,
-        "fontSize": "0.75rem"
-      }
-    },
-    "sortByDataSource": {
-      "type": "sendTo",
-      "label": "Datenquelle",
-      "title": "Nach Datenquelle sortieren. Noch einmal drücken, um die Sortierrichtung umzukehren.",
-      "command": "sortShadingDevices",
-      "jsonData": "{\"sortBy\":\"dataSource\",\"devices\":${JSON.stringify(data.devices || [])},\"deviceMappings\":${JSON.stringify(data.deviceMappings || {})},\"sortState\":${JSON.stringify(data.deviceSort || {})}}",
-      "useNative": true,
-      "showProcess": true,
-      "xs": 2,
-      "sm": 2,
-      "controlStyle": {
-        "justifyContent": "flex-start",
-        "padding": "3px 5px",
-        "minWidth": 0,
-        "textTransform": "none",
-        "fontWeight": 600,
-        "fontSize": "0.75rem"
-      }
-    },
-    "devices": {
-      "type": "table",
-      "help": "Die Checkboxen markieren, ob ein Beschattungsgerät später morgens/abends zeitgesteuert oder abhängig vom Sonnenstand gefahren werden soll.",
-      "useCardFor": [
-        "xs",
-        "sm"
-      ],
-      "titleAttribute": "name",
-      "items": [
-        {
-          "type": "text",
-          "attr": "name",
-          "title": "",
-          "default": "",
+    "sunPosition": {
+      "type": "panel",
+      "label": "Sonnenstand",
+      "items": {
+        "morningSunHeader": {
+          "type": "header",
+          "text": "Morgens",
+          "size": 5,
+          "xs": 12
+        },
+        "eveningSunHeader": {
+          "type": "header",
+          "text": "Abends",
+          "size": 5,
+          "xs": 12,
+          "newLine": true
+        },
+        "morningOpenAzimuth": {
+          "type": "number",
+          "label": "Morgens: Öffnen – Azimut",
+          "min": 0,
+          "max": 360,
+          "step": 1,
+          "unit": "°",
+          "xs": 4,
           "style": {
-            "fontSize": "0.75rem"
+            "fontSize": "0.8rem"
           }
         },
-        {
-          "type": "text",
-          "attr": "room",
-          "title": "",
-          "default": "",
-          "readOnly": true,
+        "morningOpenElevation": {
+          "type": "number",
+          "label": "Morgens: Öffnen – Elevation",
+          "min": -90,
+          "max": 90,
+          "step": 1,
+          "unit": "°",
+          "xs": 4,
           "style": {
-            "fontSize": "0.75rem"
+            "fontSize": "0.8rem"
           }
         },
-        {
-          "type": "text",
-          "attr": "source",
-          "title": "",
-          "default": "",
-          "readOnly": true,
-          "defaultFunc": "data.positionId && data.positionId.startsWith('alias.0.') ? 'Device Manager' : 'Direkt'",
+        "morningOpenOffsetMinutes": {
+          "type": "number",
+          "label": "Versatz (Minuten; − früher, + später)",
+          "min": -720,
+          "max": 720,
+          "step": 1,
+          "unit": "min",
+          "xs": 4,
           "style": {
-            "fontSize": "0.75rem"
+            "fontSize": "0.8rem"
           }
         },
-        {
-          "type": "text",
-          "attr": "dataSource",
-          "title": "",
-          "default": "",
-          "readOnly": true,
-          "defaultFunc": "data.positionId ? (data.positionId.startsWith('shelly.') ? 'Shelly' : data.positionId.split('.')[0]) : ''",
+        "morningCloseAzimuth": {
+          "type": "number",
+          "label": "Morgens: Schließen – Azimut",
+          "min": 0,
+          "max": 360,
+          "step": 1,
+          "unit": "°",
+          "xs": 4,
           "style": {
-            "fontSize": "0.75rem"
+            "fontSize": "0.8rem"
           }
         },
-        {
-          "type": "checkbox",
-          "attr": "timeBased",
-          "title": "",
-          "label": "",
-          "default": false,
+        "morningCloseElevation": {
+          "type": "number",
+          "label": "Morgens: Schließen – Elevation",
+          "min": -90,
+          "max": 90,
+          "step": 1,
+          "unit": "°",
+          "xs": 4,
           "style": {
-            "fontSize": "0.75rem"
+            "fontSize": "0.8rem"
           }
         },
-        {
-          "type": "checkbox",
-          "attr": "sunPosition",
-          "title": "",
-          "label": "",
-          "default": false,
+        "morningCloseOffsetMinutes": {
+          "type": "number",
+          "label": "Versatz (Minuten; − früher, + später)",
+          "min": -720,
+          "max": 720,
+          "step": 1,
+          "unit": "min",
+          "xs": 4,
           "style": {
-            "fontSize": "0.75rem"
+            "fontSize": "0.8rem"
+          }
+        },
+        "eveningOpenAzimuth": {
+          "type": "number",
+          "label": "Abends: Öffnen – Azimut",
+          "min": 0,
+          "max": 360,
+          "step": 1,
+          "unit": "°",
+          "xs": 4,
+          "style": {
+            "fontSize": "0.8rem"
+          }
+        },
+        "eveningOpenElevation": {
+          "type": "number",
+          "label": "Abends: Öffnen – Elevation",
+          "min": -90,
+          "max": 90,
+          "step": 1,
+          "unit": "°",
+          "xs": 4,
+          "style": {
+            "fontSize": "0.8rem"
+          }
+        },
+        "eveningOpenOffsetMinutes": {
+          "type": "number",
+          "label": "Versatz (Minuten; − früher, + später)",
+          "min": -720,
+          "max": 720,
+          "step": 1,
+          "unit": "min",
+          "xs": 4,
+          "style": {
+            "fontSize": "0.8rem"
+          }
+        },
+        "eveningCloseAzimuth": {
+          "type": "number",
+          "label": "Abends: Schließen – Azimut",
+          "min": 0,
+          "max": 360,
+          "step": 1,
+          "unit": "°",
+          "xs": 4,
+          "style": {
+            "fontSize": "0.8rem"
+          }
+        },
+        "eveningCloseElevation": {
+          "type": "number",
+          "label": "Abends: Schließen – Elevation",
+          "min": -90,
+          "max": 90,
+          "step": 1,
+          "unit": "°",
+          "xs": 4,
+          "style": {
+            "fontSize": "0.8rem"
+          }
+        },
+        "eveningCloseOffsetMinutes": {
+          "type": "number",
+          "label": "Versatz (Minuten; − früher, + später)",
+          "min": -720,
+          "max": 720,
+          "step": 1,
+          "unit": "min",
+          "xs": 4,
+          "style": {
+            "fontSize": "0.8rem"
           }
         }
-      ],
-      "compact": true
-    },
-    "shadingDevice": {
-      "type": "selectSendTo",
-      "label": "Beschattungsgerät auswählen",
-      "help": "Zeigt Shelly-Rollläden sowie Rollos und Markisen aus dem Device Manager. Verknüpfte Geräte werden bevorzugt, damit die dort zugeordneten Datenpunkte verwendet werden.",
-      "command": "discoverShadingDevices",
-      "multiple": false,
-      "manual": false,
-      "noTranslation": true,
-      "doNotSave": true,
-      "jsonData": "{\"devices\":${JSON.stringify(data.devices || [])},\"deviceMappings\":${JSON.stringify(data.deviceMappings || {})},\"deviceSort\":${JSON.stringify(data.deviceSort || {})}}",
-      "alsoDependsOn": [
-        "devices",
-        "deviceMappings"
-      ]
-    },
-    "addShadingDevice": {
-      "type": "sendTo",
-      "label": "Ausgewähltes Gerät in die Geräteliste aufnehmen",
-      "help": "Übernimmt das ausgewählte Rollo oder die Markise. Die erkannte Positionssteuerung wird intern zugeordnet.",
-      "command": "addShadingDevice",
-      "jsonData": "{\"key\":\"${data.shadingDevice}\",\"devices\":${JSON.stringify(data.devices || [])},\"deviceMappings\":${JSON.stringify(data.deviceMappings || {})},\"deviceSort\":${JSON.stringify(data.deviceSort || {})}}",
-      "variant": "contained",
-      "showProcess": true,
-      "useNative": true,
-      "result": {
-        "de": "Beschattungsgerät wurde in die Geräteliste aufgenommen.",
-        "en": "Shading device was added to the device list."
-      },
-      "error": {
-        "de": "Beschattungsgerät konnte nicht aufgenommen werden.",
-        "en": "Could not add the shading device."
-      },
-      "disabled": "!data.shadingDevice"
-    },
-    "deviceMappings": {
-      "type": "jsonEditor",
-      "label": "Interne Gerätezuordnungen",
-      "hidden": true,
-      "default": {}
-    },
-    "deviceSort": {
-      "type": "jsonEditor",
-      "label": "Interner Sortierzustand",
-      "hidden": true,
-      "default": {}
-    },
-    "sortByTimeControl": {
-      "type": "staticText",
-      "text": "Morgens/abends",
-      "xs": 2,
-      "sm": 2,
-      "style": {
-        "fontSize": "0.75rem",
-        "fontWeight": 600,
-        "padding": "4px 5px"
-      }
-    },
-    "sortBySunPosition": {
-      "type": "staticText",
-      "text": "Sonnenstand",
-      "xs": 2,
-      "sm": 2,
-      "style": {
-        "fontSize": "0.75rem",
-        "fontWeight": 600,
-        "padding": "4px 5px"
       }
     }
   }
