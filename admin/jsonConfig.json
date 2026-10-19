@@ -39,99 +39,6 @@
           "title": "Interne ID (stabil, z. B. wohnzimmer)",
           "default": "",
           "hidden": true
-        },
-        {
-          "type": "select",
-          "attr": "deviceType",
-          "title": "Gerätetyp",
-          "options": [
-            {
-              "value": "shutter",
-              "label": "Rollo"
-            },
-            {
-              "value": "blind",
-              "label": "Jalousie"
-            },
-            {
-              "value": "awning",
-              "label": "Markise"
-            }
-          ],
-          "default": "shutter",
-          "hidden": true
-        },
-        {
-          "type": "text",
-          "attr": "openId",
-          "title": "Datenpunkt: Öffnen",
-          "hidden": true
-        },
-        {
-          "type": "text",
-          "attr": "openValue",
-          "title": "Wert zum Öffnen (JSON, Standard true)",
-          "default": "true",
-          "hidden": true
-        },
-        {
-          "type": "text",
-          "attr": "closeId",
-          "title": "Datenpunkt: Schließen",
-          "hidden": true
-        },
-        {
-          "type": "text",
-          "attr": "closeValue",
-          "title": "Wert zum Schließen (JSON, Standard true)",
-          "default": "true",
-          "hidden": true
-        },
-        {
-          "type": "text",
-          "attr": "positionId",
-          "title": "Datenpunkt: Position (optional)",
-          "hidden": true
-        },
-        {
-          "type": "number",
-          "attr": "positionClosedValue",
-          "title": "Positionswert für geschlossen",
-          "default": 0,
-          "hidden": true
-        },
-        {
-          "type": "number",
-          "attr": "positionOpenValue",
-          "title": "Positionswert für geöffnet",
-          "default": 100,
-          "hidden": true
-        },
-        {
-          "type": "text",
-          "attr": "closedContactId",
-          "title": "Kontakt-Datenpunkt: geschlossen (optional)",
-          "hidden": true
-        },
-        {
-          "type": "checkbox",
-          "attr": "closedContactInvert",
-          "title": "Kontaktwert für „geschlossen“ invertieren",
-          "default": false,
-          "hidden": true
-        },
-        {
-          "type": "text",
-          "attr": "tiltedContactId",
-          "title": "Kontakt-Datenpunkt: gekippt (optional)",
-          "hidden": true
-        },
-        {
-          "type": "checkbox",
-          "attr": "tiltedContactInvert",
-          "title": "Kontaktwert für „gekippt“ invertieren",
-          "default": false,
-          "hidden": true
         }
       ]
     },
@@ -163,6 +70,12 @@
         "en": "Could not add the shading device."
       },
       "disabled": "!data.shadingDevice"
+    },
+    "deviceMappings": {
+      "type": "jsonEditor",
+      "label": "Interne Gerätezuordnungen",
+      "hidden": true,
+      "default": {}
     }
   }
 }

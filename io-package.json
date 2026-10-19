@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "shutter-master",
-    "version": "0.4.0",
+    "version": "0.4.1",
     "title": "Shutter Master",
     "titleLang": {
       "en": "Shutter Master",
@@ -44,8 +44,8 @@
     ],
     "news": {
       "NEXT": {
-        "en": "Discover Device Manager shading devices, prefer linked datapoints, and sort devices alphabetically",
-        "de": "Beschattungsgeräte aus dem Device Manager erkennen, verknüpfte Datenpunkte bevorzugen und alphabetisch sortieren"
+        "en": "Keep datapoint mappings internal and remove technical columns from the device list",
+        "de": "Datenpunkt-Zuordnungen intern speichern und technische Spalten aus der Geräteliste entfernen"
       }
     },
     "instanceObjects": [
@@ -74,6 +74,7 @@
   },
   "native": {
     "devices": [],
-    "shellyShutters": []
+    "shellyShutters": [],
+    "deviceMappings": {}
   }
 }

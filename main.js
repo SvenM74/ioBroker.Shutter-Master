@@ -262,12 +262,16 @@ class ShutterMaster extends utils.Adapter {
 
     const currentConfig = this.config && typeof this.config === "object" ? this.config : {};
     const devices = Array.isArray(currentConfig.devices) ? [...currentConfig.devices] : [];
+    const deviceMappings = { ...(currentConfig.deviceMappings || {}) };
     if (
       this.addedShellyChannels.has(candidate.key) ||
-      devices.some(device =>
-        String(device.positionId || "").trim() === candidate.positionId ||
-        String(device.deviceSourceId || "").trim() === candidate.key,
-      )
+      devices.some(device => {
+        const mapping = deviceMappings[this.normalizeDeviceId(device.deviceId)] || device;
+        return (
+          String(mapping.positionId || "").trim() === candidate.positionId ||
+          String(mapping.deviceSourceId || device.deviceSourceId || "").trim() === candidate.key
+        );
+      })
     ) {
       return { error: `„${candidate.name}“ ist bereits in der Geräteliste enthalten.` };
     }
@@ -283,6 +287,8 @@ class ShutterMaster extends utils.Adapter {
       name: candidate.name,
       source: candidate.source,
       dataSource: candidate.dataSource,
+    };
+    deviceMappings[deviceId] = {
       deviceSourceId: candidate.key,
       deviceType: "shutter",
       openId: candidate.positionId,
@@ -305,6 +311,7 @@ class ShutterMaster extends utils.Adapter {
         devices: [...devices, device].sort((a, b) =>
           String(a.name || "").localeCompare(String(b.name || ""), "de", { sensitivity: "base", numeric: true }),
         ),
+        deviceMappings,
       },
       saveConfig: true,
     };
@@ -323,6 +330,7 @@ class ShutterMaster extends utils.Adapter {
   async onReady() {
     try {
       const configuredDevices = Array.isArray(this.config.devices) ? this.config.devices : [];
+      const deviceMappings = await this.getDeviceMappings(configuredDevices);
       const seenIds = new Set();
 
       for (const configured of configuredDevices) {
@@ -336,7 +344,7 @@ class ShutterMaster extends utils.Adapter {
           continue;
         }
         seenIds.add(deviceId);
-        await this.configureDevice(deviceId, configured);
+        await this.configureDevice(deviceId, { ...configured, ...(deviceMappings[deviceId] || {}) });
       }
 
       await this.subscribeStatesAsync("*");
@@ -353,6 +361,79 @@ class ShutterMaster extends utils.Adapter {
       .toLowerCase()
       .replace(/[^a-z0-9_-]+/g, "-")
       .replace(/^-+|-+$/g, "");
+  }
+
+  async getDeviceMappings(devices) {
+    const mappings = { ...(this.config.deviceMappings || {}) };
+    let changed = false;
+
+    for (const device of devices) {
+      const deviceId = this.normalizeDeviceId(device.deviceId);
+      if (!deviceId) continue;
+      const existing = mappings[deviceId] || {};
+      const legacy = {};
+      for (const key of [
+        "deviceType",
+        "openId",
+        "openValue",
+        "closeId",
+        "closeValue",
+        "positionId",
+        "positionClosedValue",
+        "positionOpenValue",
+        "closedContactId",
+        "closedContactInvert",
+        "tiltedContactId",
+        "tiltedContactInvert",
+      ]) {
+        if (device[key] !== undefined) legacy[key] = device[key];
+      }
+      const mapping = { ...legacy, ...existing };
+      if (Object.keys(mapping).length && !this.config.deviceMappings?.[deviceId]) {
+        mappings[deviceId] = mapping;
+        changed = true;
+      }
+
+      if (!device.source || !device.dataSource) {
+        const positionId = mapping.positionId || device.positionId || "";
+        const sourceObject = positionId ? await this.getForeignObjectAsync(positionId).catch(() => null) : null;
+        const sourceIds = this.getAliasSourceIds(sourceObject);
+        device.source ||= positionId.startsWith("alias.0.") ? "Device Manager" : "Direkt";
+        device.dataSource ||= this.getAdapterDisplayName(sourceIds[0] || positionId);
+        changed = true;
+      }
+
+      for (const key of [
+        "deviceType",
+        "openId",
+        "openValue",
+        "closeId",
+        "closeValue",
+        "positionId",
+        "positionClosedValue",
+        "positionOpenValue",
+        "closedContactId",
+        "closedContactInvert",
+        "tiltedContactId",
+        "tiltedContactInvert",
+        "deviceSourceId",
+      ]) {
+        delete device[key];
+      }
+    }
+
+    if (changed) {
+      this.config.deviceMappings = mappings;
+      try {
+        await this.extendForeignObjectAsync(`system.adapter.${this.namespace}`, {
+          native: { deviceMappings: mappings, devices },
+        });
+      } catch (error) {
+        this.log.warn(`Could not migrate device mappings: ${error instanceof Error ? error.message : error}`);
+      }
+    }
+
+    return mappings;
   }
 
   async configureDevice(deviceId, configured) {
