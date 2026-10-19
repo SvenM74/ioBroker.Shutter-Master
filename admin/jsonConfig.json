@@ -1,6 +1,15 @@
 {
   "type": "panel",
   "items": {
+    "shellyShutters": {
+      "type": "selectSendTo",
+      "label": "Gefundene Shelly-Shutter",
+      "help": "Lädt alle beschreibbaren Positions-Datenpunkte mit der ioBroker-Rolle level.blind aus Shelly-Instanzen. Mehrfachauswahl möglich.",
+      "command": "discoverShellyShutters",
+      "multiple": true,
+      "manual": false,
+      "noTranslation": true
+    },
     "devices": {
       "type": "table",
       "label": "Beschattungsgeräte",
@@ -105,15 +114,6 @@
           "default": false
         }
       ]
-    },
-    "shellyShutters": {
-      "type": "selectSendTo",
-      "label": "Gefundene Shelly-Shutter",
-      "help": "Lädt alle beschreibbaren Positions-Datenpunkte mit der ioBroker-Rolle level.blind aus Shelly-Instanzen. Mehrfachauswahl möglich.",
-      "command": "discoverShellyShutters",
-      "multiple": true,
-      "manual": false,
-      "noTranslation": true
     }
   }
 }

@@ -73,6 +73,7 @@
     ]
   },
   "native": {
-    "devices": []
+    "devices": [],
+    "shellyShutters": []
   }
 }
