@@ -265,7 +265,7 @@ class ShutterMaster extends utils.Adapter {
     const candidates = await this.getShadingCandidates();
     return candidates.map(candidate => ({
       value: candidate.key,
-      label: candidate.name,
+      label: candidate.room ? `${candidate.name} / ${candidate.room}` : candidate.name,
     }));
   }
 
