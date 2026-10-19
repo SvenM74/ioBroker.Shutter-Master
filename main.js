@@ -256,9 +256,22 @@ class ShutterMaster extends utils.Adapter {
         sourceIds: [candidate.positionId],
       }));
 
-    return [...preferredDevices, ...directDevices].sort((a, b) =>
-      a.name.localeCompare(b.name, "de", { sensitivity: "base", numeric: true }),
-    );
+    const addedDeviceKeys = new Set(this.addedShellyChannels);
+    const configuredDevices = Array.isArray(this.config?.devices) ? this.config.devices : [];
+    const deviceMappings = this.config?.deviceMappings || {};
+    for (const device of configuredDevices) {
+      const deviceId = this.normalizeDeviceId(device.deviceId);
+      const mapping = deviceMappings[deviceId] || device;
+      for (const id of [mapping.deviceSourceId, mapping.positionId, device.deviceSourceId, device.positionId]) {
+        if (typeof id === "string" && id) addedDeviceKeys.add(id);
+      }
+    }
+
+    return [...preferredDevices, ...directDevices]
+      .filter(candidate => !addedDeviceKeys.has(candidate.key) && !addedDeviceKeys.has(candidate.positionId))
+      .sort((a, b) =>
+        a.name.localeCompare(b.name, "de", { sensitivity: "base", numeric: true }),
+      );
   }
 
   async findShadingDevices() {
