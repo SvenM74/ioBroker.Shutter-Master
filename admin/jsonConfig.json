@@ -1,14 +1,34 @@
 {
   "type": "panel",
   "items": {
-    "shellyShutters": {
+    "shellyShutter": {
       "type": "selectSendTo",
-      "label": "Gefundene Shelly-Shutter",
-      "help": "Lädt alle beschreibbaren Positions-Datenpunkte mit der ioBroker-Rolle level.blind aus Shelly-Instanzen. Mehrfachauswahl möglich.",
+      "label": "Shelly-Rollladenrelais auswählen",
+      "help": "Zeigt jedes erkannte Shelly-Rollladenrelais einmal an. Die Auswahl basiert auf beschreibbaren Positions-Datenpunkten mit der Rolle level.blind.",
       "command": "discoverShellyShutters",
-      "multiple": true,
+      "multiple": false,
       "manual": false,
-      "noTranslation": true
+      "noTranslation": true,
+      "doNotSave": true
+    },
+    "addShellyShutter": {
+      "type": "sendTo",
+      "label": "Ausgewähltes Relais in die Geräteliste aufnehmen",
+      "help": "Übernimmt das ausgewählte Shelly-Rollladenrelais als Gerät. Positions-, Öffnen- und Schließen-Datenpunkt werden automatisch zugeordnet.",
+      "command": "addShellyShutter",
+      "jsonData": "{\"channelId\":\"${data.shellyShutter}\"}",
+      "variant": "contained",
+      "showProcess": true,
+      "useNative": true,
+      "result": {
+        "de": "Shelly-Rollladenrelais wurde in die Geräteliste aufgenommen.",
+        "en": "Shelly shutter relay was added to the device list."
+      },
+      "error": {
+        "de": "Shelly-Rollladenrelais konnte nicht aufgenommen werden.",
+        "en": "Could not add the Shelly shutter relay."
+      },
+      "disabled": "!data.shellyShutter"
     },
     "devices": {
       "type": "table",

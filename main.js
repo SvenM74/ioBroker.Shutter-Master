@@ -6,6 +6,7 @@ class ShutterMaster extends utils.Adapter {
     this.commandMap = new Map();
     this.contactMap = new Map();
     this.subscribedForeignIds = new Set();
+    this.addedShellyChannels = new Set();
 
     this.on("ready", () => void this.onReady());
     this.on("stateChange", (id, state) => void this.onStateChange(id, state));
@@ -22,39 +23,144 @@ class ShutterMaster extends utils.Adapter {
         this.sendTo(obj.from, obj.command, options, obj.callback);
         return;
       }
+      if (obj.command === "addShellyShutter") {
+        const result = await this.addShellyShutter(obj.message);
+        this.sendTo(obj.from, obj.command, result, obj.callback);
+        return;
+      }
       this.sendTo(obj.from, obj.command, [], obj.callback);
     } catch (error) {
-      this.log.warn(`Shelly shutter discovery failed: ${error instanceof Error ? error.message : error}`);
-      this.sendTo(obj.from, obj.command, [], obj.callback);
+      const message = error instanceof Error ? error.message : String(error);
+      this.log.warn(`Shelly shutter configuration failed: ${message}`);
+      const response = obj.command === "discoverShellyShutters" ? [] : { error: message };
+      this.sendTo(obj.from, obj.command, response, obj.callback);
     }
   }
 
-  async findShellyShutters() {
+  async getShellyShutterCandidates() {
     const objects = await this.getForeignObjectsAsync("shelly.*", "state");
-    const entries = Object.entries(objects || {}).filter(([id, object]) =>
-      /^shelly\.\d+\./.test(id) &&
-      object?.type === "state" &&
-      object.common?.role === "level.blind" &&
-      object.common?.type === "number" &&
-      object.common?.write === true,
-    );
+    const grouped = new Map();
 
-    const options = await Promise.all(entries.map(async ([id, object]) => {
+    for (const [id, object] of Object.entries(objects || {})) {
+      if (
+        !/^shelly\.\d+\./.test(id) ||
+        object?.type !== "state" ||
+        object.common?.role !== "level.blind" ||
+        object.common?.type !== "number" ||
+        object.common?.write !== true
+      ) {
+        continue;
+      }
+
       const lastDot = id.lastIndexOf(".");
-      const channelId = lastDot > 0 ? id.slice(0, lastDot) : "";
-      const deviceId = channelId.includes(".") ? channelId.slice(0, channelId.lastIndexOf(".")) : "";
+      if (lastDot <= 0) continue;
+      const channelId = id.slice(0, lastDot);
+      const candidate = { id, object, channelId };
+      const current = grouped.get(channelId);
+      if (!current || this.getShellyPositionRank(candidate) > this.getShellyPositionRank(current)) {
+        grouped.set(channelId, candidate);
+      }
+    }
+
+    return Promise.all([...grouped.values()].map(async candidate => {
+      const parentDot = candidate.channelId.lastIndexOf(".");
+      const deviceId = parentDot > 0 ? candidate.channelId.slice(0, parentDot) : "";
       const [channel, device] = await Promise.all([
-        channelId ? this.getForeignObjectAsync(channelId).catch(() => null) : null,
+        this.getForeignObjectAsync(candidate.channelId).catch(() => null),
         deviceId ? this.getForeignObjectAsync(deviceId).catch(() => null) : null,
       ]);
-      const deviceName = this.resolveObjectName(device?.common?.name);
-      const channelName = this.resolveObjectName(channel?.common?.name) || this.resolveObjectName(object.common.name);
-      const labelParts = [deviceName, channelName].filter(Boolean);
-      const label = labelParts.length ? `${labelParts.join(" / ")} — ${id}` : id;
-      return { value: id, label };
-    }));
 
-    return options.sort((a, b) => a.label.localeCompare(b.label));
+      const deviceName = this.resolveObjectName(device?.common?.name);
+      const channelName =
+        this.resolveObjectName(channel?.common?.name) ||
+        candidate.channelId.slice(candidate.channelId.lastIndexOf(".") + 1);
+      const name = [deviceName, channelName].filter(Boolean).join(" / ") || candidate.channelId;
+      const min = Number(candidate.object.common.min);
+      const max = Number(candidate.object.common.max);
+
+      return {
+        channelId: candidate.channelId,
+        positionId: candidate.id,
+        name,
+        min: Number.isFinite(min) ? min : 0,
+        max: Number.isFinite(max) ? max : 100,
+      };
+    }));
+  }
+
+  getShellyPositionRank(candidate) {
+    const idPart = candidate.id.slice(candidate.id.lastIndexOf(".") + 1).toLowerCase();
+    const name = this.resolveObjectName(candidate.object.common?.name).toLowerCase();
+    const text = `${idPart} ${name}`;
+    let rank = 0;
+    if (/position|level/.test(text)) rank += 1;
+    if (/target|setpoint|command|control/.test(text)) rank += 2;
+    if (/^position$/.test(idPart)) rank += 1;
+    return rank;
+  }
+
+  async findShellyShutters() {
+    const candidates = await this.getShellyShutterCandidates();
+    return candidates
+      .map(candidate => ({
+        value: candidate.channelId,
+        label: `${candidate.name} — ${candidate.channelId}`,
+        description: candidate.positionId,
+      }))
+      .sort((a, b) => a.label.localeCompare(b.label));
+  }
+
+  async addShellyShutter(message) {
+    const channelId =
+      typeof message === "string"
+        ? message.trim()
+        : String(message?.channelId || message?.shellyShutter || "").trim();
+    if (!channelId) {
+      return { error: "Bitte zuerst ein Shelly-Rollladenrelais auswählen." };
+    }
+
+    const candidate = (await this.getShellyShutterCandidates()).find(item => item.channelId === channelId);
+    if (!candidate) {
+      return { error: "Das ausgewählte Shelly-Rollladenrelais wurde nicht gefunden. Bitte die Liste aktualisieren." };
+    }
+
+    const currentConfig = this.config && typeof this.config === "object" ? this.config : {};
+    const devices = Array.isArray(currentConfig.devices) ? [...currentConfig.devices] : [];
+    if (
+      this.addedShellyChannels.has(channelId) ||
+      devices.some(device => String(device.positionId || "").trim() === candidate.positionId)
+    ) {
+      return { error: `„${candidate.name}“ ist bereits in der Geräteliste enthalten.` };
+    }
+
+    const baseId = this.normalizeDeviceId(candidate.name) || this.normalizeDeviceId(candidate.channelId.split(".").pop()) || "shelly-rollo";
+    const usedIds = new Set(devices.map(device => this.normalizeDeviceId(device.deviceId)).filter(Boolean));
+    let deviceId = baseId;
+    let suffix = 2;
+    while (usedIds.has(deviceId)) deviceId = `${baseId}-${suffix++}`;
+
+    const device = {
+      deviceId,
+      name: candidate.name,
+      deviceType: "shutter",
+      openId: candidate.positionId,
+      openValue: String(candidate.max),
+      closeId: candidate.positionId,
+      closeValue: String(candidate.min),
+      positionId: candidate.positionId,
+      positionClosedValue: candidate.min,
+      positionOpenValue: candidate.max,
+      closedContactId: "",
+      closedContactInvert: false,
+      tiltedContactId: "",
+      tiltedContactInvert: false,
+    };
+
+    this.addedShellyChannels.add(channelId);
+    return {
+      native: { ...currentConfig, devices: [...devices, device] },
+      saveConfig: true,
+    };
   }
 
   resolveObjectName(name) {

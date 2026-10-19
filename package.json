@@ -1,6 +1,6 @@
 {
   "name": "iobroker.shutter-master",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Manufacturer-independent scenario-based shading control for ioBroker",
   "main": "main.js",
   "scripts": {

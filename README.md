@@ -41,4 +41,6 @@ Contributions and feedback are welcome.
 
 ## Shelly shutter discovery
 
-The instance configuration can query all Shelly state objects with the writable `level.blind` role. These are presented as a multi-select list with device names and full object IDs. The selected position IDs are stored in the instance configuration. This discovery step identifies Shelly devices in shutter/roller mode; automatic schedules and rule execution remain future work.
+The instance configuration groups writable Shelly position states with the `level.blind` role by their parent roller channel. Each roller channel appears once, even if the Shelly adapter exposes more than one matching position state for it.
+
+Choose a detected roller and use **Add selected relay to device list**. Shutter Master creates a device row and maps the Shelly position state to position, open, and close commands. The state limits are used for closed and open values. Contacts can still be added manually in the device table. Automatic schedules and rule execution remain future work.

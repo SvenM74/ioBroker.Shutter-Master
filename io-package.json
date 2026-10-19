@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "shutter-master",
-    "version": "0.3.0",
+    "version": "0.3.1",
     "title": "Shutter Master",
     "titleLang": {
       "en": "Shutter Master",
@@ -44,8 +44,8 @@
     ],
     "news": {
       "NEXT": {
-        "en": "Discover Shelly shutter datapoints in the instance configuration",
-        "de": "Shelly-Shutter-Datenpunkte in der Instanzkonfiguration finden"
+        "en": "Group Shelly shutter controls and add selected rollers to the device list",
+        "de": "Shelly-Rollläden gruppieren und ausgewählte Relais in die Geräteliste übernehmen"
       }
     },
     "instanceObjects": [
