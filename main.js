@@ -156,7 +156,8 @@ class ShutterMaster extends utils.Adapter {
         candidate.channelId.slice(candidate.channelId.lastIndexOf(".") + 1);
       const sourceIds = this.getAliasSourceIds(candidate.object);
       if (!sourceIds.length) return null;
-      const room = this.getRoomName([candidate.id, candidate.channelId, ...sourceIds], roomObjects, this.resolveObjectName(device?.common?.name));
+      const roomFallback = deviceId !== candidate.channelId ? this.resolveObjectName(device?.common?.name) : "";
+      const room = this.getRoomName([candidate.id, candidate.channelId, ...sourceIds], roomObjects, roomFallback);
       const dataSource = this.getAdapterDisplayName(sourceIds[0]);
       const min = Number(candidate.object.common.min);
       const max = Number(candidate.object.common.max);
@@ -391,6 +392,7 @@ class ShutterMaster extends utils.Adapter {
   async getDeviceMappings(devices) {
     const mappings = { ...(this.config.deviceMappings || {}) };
     let changed = false;
+    const roomObjects = await this.getForeignObjectsAsync("enum.rooms.*", "enum").catch(() => ({}));
 
     for (const device of devices) {
       const deviceId = this.normalizeDeviceId(device.deviceId);
@@ -417,6 +419,28 @@ class ShutterMaster extends utils.Adapter {
       if (Object.keys(mapping).length && !this.config.deviceMappings?.[deviceId]) {
         mappings[deviceId] = mapping;
         changed = true;
+      }
+
+      if (!device.room) {
+        const positionId = mapping.positionId || device.positionId || "";
+        if (positionId) {
+          const channelId = positionId.slice(0, positionId.lastIndexOf("."));
+          const parentDot = channelId.lastIndexOf(".");
+          const roomObjectId = parentDot > "alias.0".length ? channelId.slice(0, parentDot) : "";
+          const [positionObject, roomObject] = await Promise.all([
+            this.getForeignObjectAsync(positionId).catch(() => null),
+            roomObjectId ? this.getForeignObjectAsync(roomObjectId).catch(() => null) : null,
+          ]);
+          const room = this.getRoomName(
+            [positionId, channelId, ...this.getAliasSourceIds(positionObject)],
+            roomObjects,
+            this.resolveObjectName(roomObject?.common?.name),
+          );
+          if (room) {
+            device.room = room;
+            changed = true;
+          }
+        }
       }
 
       if (!device.source || !device.dataSource) {
