@@ -10,6 +10,59 @@ class ShutterMaster extends utils.Adapter {
     this.on("ready", () => void this.onReady());
     this.on("stateChange", (id, state) => void this.onStateChange(id, state));
     this.on("foreignStateChange", (id, state) => void this.onForeignStateChange(id, state));
+    this.on("message", obj => void this.onMessage(obj));
+  }
+
+  async onMessage(obj) {
+    if (!obj || !obj.callback) return;
+
+    try {
+      if (obj.command === "discoverShellyShutters") {
+        const options = await this.findShellyShutters();
+        this.sendTo(obj.from, obj.command, options, obj.callback);
+        return;
+      }
+      this.sendTo(obj.from, obj.command, [], obj.callback);
+    } catch (error) {
+      this.log.warn(`Shelly shutter discovery failed: ${error instanceof Error ? error.message : error}`);
+      this.sendTo(obj.from, obj.command, [], obj.callback);
+    }
+  }
+
+  async findShellyShutters() {
+    const objects = await this.getForeignObjectsAsync("shelly.*", "state");
+    const entries = Object.entries(objects || {}).filter(([id, object]) =>
+      /^shelly\\.\\d+\\./.test(id) &&
+      object?.type === "state" &&
+      object.common?.role === "level.blind" &&
+      object.common?.type === "number" &&
+      object.common?.write === true,
+    );
+
+    const options = await Promise.all(entries.map(async ([id, object]) => {
+      const lastDot = id.lastIndexOf(".");
+      const channelId = lastDot > 0 ? id.slice(0, lastDot) : "";
+      const deviceId = channelId.includes(".") ? channelId.slice(0, channelId.lastIndexOf(".")) : "";
+      const [channel, device] = await Promise.all([
+        channelId ? this.getForeignObjectAsync(channelId).catch(() => null) : null,
+        deviceId ? this.getForeignObjectAsync(deviceId).catch(() => null) : null,
+      ]);
+      const deviceName = this.resolveObjectName(device?.common?.name);
+      const channelName = this.resolveObjectName(channel?.common?.name) || this.resolveObjectName(object.common.name);
+      const labelParts = [deviceName, channelName].filter(Boolean);
+      const label = labelParts.length ? `${labelParts.join(" / ")} — ${id}` : id;
+      return { value: id, label };
+    }));
+
+    return options.sort((a, b) => a.label.localeCompare(b.label));
+  }
+
+  resolveObjectName(name) {
+    if (typeof name === "string") return name.trim();
+    if (name && typeof name === "object") {
+      return String(name.de || name.en || Object.values(name)[0] || "").trim();
+    }
+    return "";
   }
 
   async onReady() {

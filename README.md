@@ -38,3 +38,7 @@ npm start
 ```
 
 Contributions and feedback are welcome.
+
+## Shelly shutter discovery
+
+The instance configuration can query all Shelly state objects with the writable `level.blind` role. These are presented as a multi-select list with device names and full object IDs. The selected position IDs are stored in the instance configuration. This discovery step identifies Shelly devices in shutter/roller mode; automatic schedules and rule execution remain future work.

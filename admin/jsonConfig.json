@@ -5,7 +5,10 @@
       "type": "table",
       "label": "Beschattungsgeräte",
       "help": "Lege hier jedes Rollo, jede Jalousie und jede Markise an. Datenpunkt-IDs sind vollständige ioBroker-IDs. Open und Close senden den konfigurierten JSON-Wert. Die Positionssteuerung verwendet 0 = geschlossen und 100 = geöffnet. Kontakte werden gelesen und hier angezeigt; automatische Regeln folgen später.",
-      "useCardFor": ["xs", "sm"],
+      "useCardFor": [
+        "xs",
+        "sm"
+      ],
       "titleAttribute": "name",
       "items": [
         {
@@ -25,9 +28,18 @@
           "attr": "deviceType",
           "title": "Gerätetyp",
           "options": [
-            { "value": "shutter", "label": "Rollo" },
-            { "value": "blind", "label": "Jalousie" },
-            { "value": "awning", "label": "Markise" }
+            {
+              "value": "shutter",
+              "label": "Rollo"
+            },
+            {
+              "value": "blind",
+              "label": "Jalousie"
+            },
+            {
+              "value": "awning",
+              "label": "Markise"
+            }
           ],
           "default": "shutter"
         },
@@ -93,6 +105,15 @@
           "default": false
         }
       ]
+    },
+    "shellyShutters": {
+      "type": "selectSendTo",
+      "label": "Gefundene Shelly-Shutter",
+      "help": "Lädt alle beschreibbaren Positions-Datenpunkte mit der ioBroker-Rolle level.blind aus Shelly-Instanzen. Mehrfachauswahl möglich.",
+      "command": "discoverShellyShutters",
+      "multiple": true,
+      "manual": false,
+      "noTranslation": true
     }
   }
 }

@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "shutter-master",
-    "version": "0.2.0",
+    "version": "0.3.0",
     "title": "Shutter Master",
     "titleLang": {
       "en": "Shutter Master",
@@ -26,10 +26,14 @@
     "tier": 3,
     "enabled": true,
     "compact": true,
-    "messagebox": false,
+    "messagebox": true,
     "dependencies": [
-      { "js-controller": ">=5.0.0" },
-      { "admin": ">=6.0.0" }
+      {
+        "js-controller": ">=5.0.0"
+      },
+      {
+        "admin": ">=6.0.0"
+      }
     ],
     "keywords": [
       "iobroker",
@@ -40,15 +44,17 @@
     ],
     "news": {
       "NEXT": {
-        "en": "Device configuration, manual commands, and contact state mirroring",
-        "de": "Gerätekonfiguration, manuelle Befehle und Einlesen der Kontaktzustände"
+        "en": "Discover Shelly shutter datapoints in the instance configuration",
+        "de": "Shelly-Shutter-Datenpunkte in der Instanzkonfiguration finden"
       }
     },
     "instanceObjects": [
       {
         "_id": "info",
         "type": "channel",
-        "common": { "name": "Adapter information" },
+        "common": {
+          "name": "Adapter information"
+        },
         "native": {}
       },
       {
