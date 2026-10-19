@@ -51,7 +51,11 @@
       "manual": false,
       "noTranslation": true,
       "doNotSave": true,
-      "jsonData": "{\"devices\":${JSON.stringify(data.devices || [])},\"deviceMappings\":${JSON.stringify(data.deviceMappings || {})}}"
+      "jsonData": "{\"devices\":${JSON.stringify(data.devices || [])},\"deviceMappings\":${JSON.stringify(data.deviceMappings || {})}}",
+      "alsoDependsOn": [
+        "devices",
+        "deviceMappings"
+      ]
     },
     "addShadingDevice": {
       "type": "sendTo",
