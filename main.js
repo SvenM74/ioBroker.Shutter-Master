@@ -22,6 +22,16 @@ class ShutterMaster extends utils.Adapter {
         this.sendTo(obj.from, obj.command, options, obj.callback);
         return;
       }
+      if (obj.command === "sortShadingDevices") {
+        const result = this.sortShadingDevices(obj.message);
+        this.sendTo(obj.from, obj.command, result, obj.callback);
+        return;
+      }
+      if (obj.command === "removeShadingDevice") {
+        const result = this.removeShadingDevice(obj.message);
+        this.sendTo(obj.from, obj.command, result, obj.callback);
+        return;
+      }
       if (obj.command === "addShadingDevice" || obj.command === "addShellyShutter") {
         const result = await this.addShadingDevice(obj.message);
         this.sendTo(obj.from, obj.command, result, obj.callback);
@@ -293,6 +303,49 @@ class ShutterMaster extends utils.Adapter {
   }
 
   
+
+  sortShadingDevices(message = {}) {
+    const currentConfig = {
+      ...(this.config && typeof this.config === "object" ? this.config : {}),
+      ...this.getDeviceConfigOverrides(message),
+    };
+    const devices = Array.isArray(currentConfig.devices) ? [...currentConfig.devices] : [];
+    const direction = message?.direction === "desc" ? -1 : 1;
+    devices.sort((a, b) =>
+      direction * String(a.name || "").localeCompare(
+        String(b.name || ""),
+        "de",
+        { sensitivity: "base", numeric: true },
+      ),
+    );
+    return {
+      native: {
+        ...currentConfig,
+        devices,
+        deviceMappings: currentConfig.deviceMappings || {},
+      },
+    };
+  }
+
+  removeShadingDevice(message = {}) {
+    const currentConfig = {
+      ...(this.config && typeof this.config === "object" ? this.config : {}),
+      ...this.getDeviceConfigOverrides(message),
+    };
+    const deviceId = this.normalizeDeviceId(message?.deviceId);
+    const devices = Array.isArray(currentConfig.devices) ? currentConfig.devices : [];
+    const removed = devices.find(device => this.normalizeDeviceId(device.deviceId) === deviceId);
+    const remaining = devices.filter(device => this.normalizeDeviceId(device.deviceId) !== deviceId);
+    const deviceMappings = { ...(currentConfig.deviceMappings || {}) };
+    if (removed) delete deviceMappings[this.normalizeDeviceId(removed.deviceId)];
+    return {
+      native: {
+        ...currentConfig,
+        devices: remaining,
+        deviceMappings,
+      },
+    };
+  }
 
   async addShadingDevice(message) {
     const key =
