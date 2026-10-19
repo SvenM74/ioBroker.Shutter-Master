@@ -32,7 +32,7 @@ class ShutterMaster extends utils.Adapter {
   async findShellyShutters() {
     const objects = await this.getForeignObjectsAsync("shelly.*", "state");
     const entries = Object.entries(objects || {}).filter(([id, object]) =>
-      /^shelly\\.\\d+\\./.test(id) &&
+      /^shelly\.\d+\./.test(id) &&
       object?.type === "state" &&
       object.common?.role === "level.blind" &&
       object.common?.type === "number" &&
