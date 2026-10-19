@@ -146,9 +146,11 @@ class ShutterMaster extends utils.Adapter {
         this.getForeignObjectAsync(candidate.channelId).catch(() => null),
         this.getForeignObjectAsync(deviceId).catch(() => null),
       ]);
+      // Device Manager displays the detected device object's name (storeId), which
+      // is the alias channel containing the shutter state. Its parent can be a room.
       const name =
-        this.resolveObjectName(device?.common?.name) ||
         this.resolveObjectName(channel?.common?.name) ||
+        this.resolveObjectName(device?.common?.name) ||
         candidate.channelId.slice(candidate.channelId.lastIndexOf(".") + 1);
       const sourceIds = this.getAliasSourceIds(candidate.object);
       if (!sourceIds.length) return null;
