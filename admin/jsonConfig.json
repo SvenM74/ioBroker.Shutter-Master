@@ -79,26 +79,6 @@
                 "fontSize": "0.75rem"
               },
               "sort": false
-            },
-            {
-              "type": "checkbox",
-              "attr": "timeBased",
-              "title": "Morgens/abends",
-              "label": "",
-              "default": false,
-              "style": {
-                "fontSize": "0.75rem"
-              }
-            },
-            {
-              "type": "checkbox",
-              "attr": "sunPosition",
-              "title": "Sonnenstand",
-              "label": "",
-              "default": false,
-              "style": {
-                "fontSize": "0.75rem"
-              }
             }
           ],
           "compact": true,
@@ -107,7 +87,6 @@
         "shadingDevice": {
           "type": "selectSendTo",
           "label": "Beschattungsgerät auswählen",
-          "help": "Zeigt Shelly-Rollläden sowie Rollos und Markisen aus dem Device Manager. Verknüpfte Geräte werden bevorzugt, damit die dort zugeordneten Datenpunkte verwendet werden.",
           "command": "discoverShadingDevices",
           "multiple": false,
           "manual": false,
@@ -122,7 +101,6 @@
         "addShadingDevice": {
           "type": "sendTo",
           "label": "Ausgewähltes Gerät in die Geräteliste aufnehmen",
-          "help": "Übernimmt das ausgewählte Rollo oder die Markise. Die erkannte Positionssteuerung wird intern zugeordnet.",
           "command": "addShadingDevice",
           "jsonData": "{\"key\":\"${data.shadingDevice}\",\"devices\":${JSON.stringify(data.devices || [])},\"deviceMappings\":${JSON.stringify(data.deviceMappings || {})},\"deviceSort\":${JSON.stringify(data.deviceSort || {})}}",
           "variant": "contained",
