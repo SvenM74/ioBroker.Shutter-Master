@@ -76,7 +76,7 @@ class ShutterMaster extends utils.Adapter {
         candidate.channelId.slice(candidate.channelId.lastIndexOf(".") + 1);
       if (!this.isShellyShutterChannel(candidate.channelId, channelName)) return null;
 
-      const name = [deviceName, channelName].filter(Boolean).join(" / ") || channelName;
+      const name = deviceName || channelName;
       const min = Number(candidate.object.common.min);
       const max = Number(candidate.object.common.max);
 

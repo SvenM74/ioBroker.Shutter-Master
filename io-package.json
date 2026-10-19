@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "shutter-master",
-    "version": "0.3.2",
+    "version": "0.3.3",
     "title": "Shutter Master",
     "titleLang": {
       "en": "Shutter Master",
@@ -44,8 +44,8 @@
     ],
     "news": {
       "NEXT": {
-        "en": "Detect configured Shelly shutter channels and hide datapoint IDs in the selection",
-        "de": "Nur konfigurierte Shelly-Shutter erkennen und Datenpunkt-IDs in der Auswahl ausblenden"
+        "en": "Show only the device name in the Shelly shutter selection",
+        "de": "In der Shelly-Shutter-Auswahl nur den Rollonamen anzeigen"
       }
     },
     "instanceObjects": [
