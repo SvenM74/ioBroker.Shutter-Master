@@ -39,13 +39,6 @@
           "default": "",
           "readOnly": true,
           "defaultFunc": "data.positionId ? (data.positionId.startsWith('shelly.') ? 'Shelly' : data.positionId.split('.')[0]) : ''"
-        },
-        {
-          "type": "text",
-          "attr": "deviceId",
-          "title": "Interne ID (stabil, z. B. wohnzimmer)",
-          "default": "",
-          "hidden": true
         }
       ]
     },

@@ -352,7 +352,6 @@ class ShutterMaster extends utils.Adapter {
         ),
         deviceMappings,
       },
-      saveConfig: true,
     };
   }
 
