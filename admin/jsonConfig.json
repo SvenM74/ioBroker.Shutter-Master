@@ -4,7 +4,7 @@
     "devices": {
       "type": "table",
       "label": "Beschattungsgeräte",
-      "help": "Die Geräteliste zeigt zunächst nur Name, Quelle und Datenquelle. Technische Datenpunkt-Zuordnungen werden intern gespeichert; automatische Regeln folgen später.",
+      "help": "Die Geräteliste zeigt Gerätenamen, Raum, Quelle und Datenquelle. Technische Datenpunkt-Zuordnungen werden intern gespeichert; automatische Regeln folgen später.",
       "useCardFor": [
         "xs",
         "sm"
@@ -16,6 +16,13 @@
           "attr": "name",
           "title": "Gerätename",
           "default": ""
+        },
+        {
+          "type": "text",
+          "attr": "room",
+          "title": "Raum",
+          "default": "",
+          "readOnly": true
         },
         {
           "type": "text",

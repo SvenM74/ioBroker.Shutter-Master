@@ -39,7 +39,7 @@ class ShutterMaster extends utils.Adapter {
 
   
 
-  async getShellyShutterCandidates() {
+  async getShellyShutterCandidates(roomObjects = {}) {
     const objects = await this.getForeignObjectsAsync("shelly.*", "state");
     const grouped = new Map();
 
@@ -79,6 +79,7 @@ class ShutterMaster extends utils.Adapter {
       if (!this.isShellyShutterChannel(candidate.channelId, channelName)) return null;
 
       const name = deviceName || channelName;
+      const room = this.getRoomName([candidate.id, candidate.channelId], roomObjects);
       const min = Number(candidate.object.common.min);
       const max = Number(candidate.object.common.max);
 
@@ -86,6 +87,7 @@ class ShutterMaster extends utils.Adapter {
         channelId: candidate.channelId,
         positionId: candidate.id,
         name,
+        room,
         min: Number.isFinite(min) ? min : 0,
         max: Number.isFinite(max) ? max : 100,
       };
@@ -114,7 +116,7 @@ class ShutterMaster extends utils.Adapter {
     return rank;
   }
 
-  async getDeviceAdapterShutterCandidates() {
+  async getDeviceAdapterShutterCandidates(roomObjects = {}) {
     const objects = await this.getForeignObjectsAsync("alias.0.*", "state");
     const grouped = new Map();
 
@@ -154,6 +156,7 @@ class ShutterMaster extends utils.Adapter {
         candidate.channelId.slice(candidate.channelId.lastIndexOf(".") + 1);
       const sourceIds = this.getAliasSourceIds(candidate.object);
       if (!sourceIds.length) return null;
+      const room = this.getRoomName([candidate.id, candidate.channelId, ...sourceIds], roomObjects, this.resolveObjectName(device?.common?.name));
       const dataSource = this.getAdapterDisplayName(sourceIds[0]);
       const min = Number(candidate.object.common.min);
       const max = Number(candidate.object.common.max);
@@ -163,6 +166,7 @@ class ShutterMaster extends utils.Adapter {
         channelId: candidate.channelId,
         positionId: candidate.id,
         name,
+        room,
         source: "Device Manager",
         dataSource,
         sourceIds,
@@ -179,6 +183,23 @@ class ShutterMaster extends utils.Adapter {
       return [aliasId.write, aliasId.read].filter(value => typeof value === "string" && value.length > 0);
     }
     return [];
+  }
+
+  getRoomName(ids, roomObjects, fallback = "") {
+    const targets = ids.filter(id => typeof id === "string" && id.length > 0);
+    for (const object of Object.values(roomObjects || {})) {
+      const members = object?.common?.members;
+      if (!Array.isArray(members)) continue;
+      const belongsToRoom = members.some(member =>
+        typeof member === "string" && targets.some(id =>
+          id === member || id.startsWith(member + ".") || member.startsWith(id + "."),
+        ),
+      );
+      if (belongsToRoom) {
+        return this.resolveObjectName(object.common?.name) || String(object._id || "").split(".").pop() || fallback;
+      }
+    }
+    return fallback;
   }
 
   getAdapterDisplayName(id) {
@@ -199,9 +220,10 @@ class ShutterMaster extends utils.Adapter {
   }
 
   async getShadingCandidates() {
+    const roomObjects = await this.getForeignObjectsAsync("enum.rooms.*", "enum").catch(() => ({}));
     const [shelly, deviceAdapter] = await Promise.all([
-      this.getShellyShutterCandidates(),
-      this.getDeviceAdapterShutterCandidates(),
+      this.getShellyShutterCandidates(roomObjects),
+      this.getDeviceAdapterShutterCandidates(roomObjects),
     ]);
     const usedShellyChannels = new Set();
 
@@ -289,6 +311,7 @@ class ShutterMaster extends utils.Adapter {
       name: candidate.name,
       source: candidate.source,
       dataSource: candidate.dataSource,
+      room: candidate.room || "",
     };
     deviceMappings[deviceId] = {
       deviceSourceId: candidate.key,
